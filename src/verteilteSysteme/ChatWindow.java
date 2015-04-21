@@ -7,6 +7,7 @@ import javax.swing.JTextField;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.Calendar;
 
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -53,12 +54,10 @@ public class ChatWindow {
 	public ChatWindow() {
 		initialize();
 	}
-	public void addMessage(Message message) {
-				String text;
-				text = "zeit" + message.getUser() + ": " + message.getContent();
+	public void addMessage(Message message) {		
 			   try {
 			      Document doc = paneMessages.getDocument();
-			      doc.insertString(doc.getLength(), text +"\n", null);
+			      doc.insertString(doc.getLength(), message.toString() +"\n", null);
 			   } catch(BadLocationException exc) {
 			      exc.printStackTrace();
 			   }		
