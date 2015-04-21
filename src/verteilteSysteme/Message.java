@@ -1,6 +1,7 @@
 package verteilteSysteme;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class Message {
@@ -27,17 +28,16 @@ public class Message {
 	}
 
 	public String toString() {
-		return this.timestamp  + " " + this.getOwner().getUsername() + ": " + this.getContent();
+		String timestampFormatted = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(this.timestamp);
+		return  timestampFormatted + " " + this.getOwner().getUsername() + ": " + this.getContent();
 	}
 	
 	public Timestamp generateTimestamp() {
 		// 1) create a java calendar instance
-		Calendar calendar = Calendar.getInstance();
-		 
+		Calendar calendar = Calendar.getInstance();		 
 		// 2) get a java.util.Date from the calendar instance.
-//		    this date will represent the current instant, or "now".
-		java.util.Date now = calendar.getTime();
-		 
+		// this date will represent the current instant, or "now".
+		java.util.Date now = calendar.getTime();		 
 		// 3) a java current time (now) instance
 		java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
 		
