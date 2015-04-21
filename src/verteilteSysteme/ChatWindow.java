@@ -4,24 +4,30 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.factories.FormFactory;
+
 import javax.swing.JSplitPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 public class ChatWindow {
 
 	private JFrame frmChatsystemTinfb;
 	private JTextField textField;
 	private JTextField textField_1;
+	private JTextPane paneMessages;
 
 	/**
 	 * Launch the application.
@@ -32,6 +38,8 @@ public class ChatWindow {
 				try {
 					ChatWindow window = new ChatWindow();
 					window.frmChatsystemTinfb.setVisible(true);
+
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -45,7 +53,16 @@ public class ChatWindow {
 	public ChatWindow() {
 		initialize();
 	}
-
+	public void addMessage(Message message) {
+				String text;
+				text = "zeit" + message.getUser() + ": " + message.getContent();
+			   try {
+			      Document doc = paneMessages.getDocument();
+			      doc.insertString(doc.getLength(), text +"\n", null);
+			   } catch(BadLocationException exc) {
+			      exc.printStackTrace();
+			   }		
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -56,7 +73,7 @@ public class ChatWindow {
 		frmChatsystemTinfb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChatsystemTinfb.getContentPane().setLayout(null);
 		
-		JTextPane paneMessages = new JTextPane();
+		paneMessages = new JTextPane();
 		paneMessages.setEditable(false);
 		paneMessages.setBounds(10, 11, 655, 489);
 		frmChatsystemTinfb.getContentPane().add(paneMessages);
