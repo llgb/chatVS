@@ -32,7 +32,7 @@ public class Message {
 		return  timestampFormatted + " " + this.getOwner().getUsername() + ": " + this.getContent();
 	}
 	
-	public Timestamp generateTimestamp() {
+	private Timestamp generateTimestamp() {
 		// 1) create a java calendar instance
 		Calendar calendar = Calendar.getInstance();		 
 		// 2) get a java.util.Date from the calendar instance.
@@ -43,7 +43,7 @@ public class Message {
 		
 		return currentTimestamp;
 	}
-	public Message(User owner, String content, Timestamp timestamp) {
+	public Message(User owner, String content) {
 		super();
 		this.owner = owner;
 		this.content = content;
