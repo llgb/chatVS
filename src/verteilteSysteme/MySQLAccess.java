@@ -163,7 +163,7 @@ private void close() {
 	public static void main(String[] args) throws Exception {
 		MySQLAccess dao = new MySQLAccess();
 	    dao.readDataBase();
-	    System.out.println("ausgabe vor änderung");
+	    System.out.println("ausgabe vor Ã„nderung");
 	    Message nachricht = new Message(new User("andreas"), "hallo tinf12b4");
 	    dao.writeDataBase(nachricht);
 		
