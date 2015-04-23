@@ -71,7 +71,6 @@ public class ChatWindow {
 			JScrollBar vertical;
 			if (message.getOwner().getUsername().equals(this.user.getUsername())) {
 				aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, new Color(255,0,0));
-				System.out.println("user ist user");
 			}
 			else{
 				aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, new Color(0,0,0));
