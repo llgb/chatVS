@@ -31,4 +31,4 @@ CREATE TABLE `users` (
 --
 CREATE USER 'chat-app'@'localhost' IDENTIFIED BY 'chat-app-password';
 GRANT SELECT,INSERT ON chatvs.messages TO 'chat-app'@'localhost';
-GRANT SELECT,INSERT,DELETE ON chatvs.messages TO 'chat-app'@'localhost';
+GRANT SELECT,INSERT,DELETE ON chatvs.users TO 'chat-app'@'localhost';
