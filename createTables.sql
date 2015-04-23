@@ -7,9 +7,10 @@ USE `chatvs`;
 
 DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages` (
-  `idmessages` int(11) NOT NULL,
+  `idmessages` int(11) NOT NULL AUTO_INCREMENT,
   `owner` varchar(64) NOT NULL,
   `content` varchar(255) DEFAULT NULL,
+  `timestamp` datetime,
   PRIMARY KEY (`idmessages`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -21,7 +22,7 @@ CREATE TABLE `messages` (
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
-  `idusers` int(11) NOT NULL,
+  `idusers` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) NOT NULL,
   PRIMARY KEY (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
