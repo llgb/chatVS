@@ -14,11 +14,16 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ChatWindow {
 
 	private JFrame frmChatsystemTinfb;
 	private JTextField tfEingabe;
 	private JTextPane paneMessages;
+	
+	private static final Logger logger = LoggerFactory.getLogger(ChatWindow.class);
 
 	/**
 	 * Launch the application.

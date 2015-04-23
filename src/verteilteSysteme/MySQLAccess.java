@@ -9,6 +9,9 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysql.jdbc.Driver;
 
 public class MySQLAccess {
@@ -18,6 +21,8 @@ public class MySQLAccess {
 	private ResultSet resultSet = null;
 	final String chatusername;
 	final String chatpw;
+	
+	private static final Logger logger = LoggerFactory.getLogger(MySQLAccess.class);
 
 	public MySQLAccess() throws Exception {
 		super();
