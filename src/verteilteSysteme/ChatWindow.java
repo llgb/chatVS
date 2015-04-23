@@ -1,16 +1,15 @@
 package verteilteSysteme;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -24,6 +23,8 @@ public class ChatWindow {
 	private JFrame frmChatsystemTinfb;
 	private JTextField tfEingabe;
 	private JTextPane paneMessages;
+	private JScrollPane scrollPane;
+	private ChatWindow window;
 	private List<Message> messagelist;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ChatWindow.class);
@@ -33,30 +34,11 @@ public class ChatWindow {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-//		EventQueue.invokeLater(new Runnable() {
-//			@Override
-//			public void run() {
-//				try {
-//					window = new ChatWindow();
-//					window.frmChatsystemTinfb.setVisible(true);
-//					window.addStringMessage("test line 1");
-//					window.addStringMessage("test line 2");
-//					Thread pollthread = new Thread(new PollThread(window));
-//					pollthread.start();
-//
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			
-//		});
-		
 		ChatWindow window = new ChatWindow();
 		window.frmChatsystemTinfb.setVisible(true);
 		Thread pollthread = new Thread(new PollThread(window));
 		pollthread.start();
-		
-		
+			
 	}
 
 	/**
@@ -100,11 +82,17 @@ public class ChatWindow {
 		frmChatsystemTinfb.setBounds(100, 100, 850, 600);
 		frmChatsystemTinfb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChatsystemTinfb.getContentPane().setLayout(null);
+		frmChatsystemTinfb.setResizable(false);
 
 		paneMessages = new JTextPane();
 		paneMessages.setEditable(false);
-		paneMessages.setBounds(10, 11, 655, 489);
-		frmChatsystemTinfb.getContentPane().add(paneMessages);
+		scrollPane = new JScrollPane();
+		JScrollPane messagesScrollPane = new JScrollPane(paneMessages);
+		messagesScrollPane.setVerticalScrollBarPolicy(
+		                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		messagesScrollPane.setBounds(10, 11, 655, 489);
+		
+		frmChatsystemTinfb.getContentPane().add(messagesScrollPane);
 
 		tfEingabe = new JTextField();
 		tfEingabe.setBounds(10, 511, 655, 39);
@@ -130,8 +118,11 @@ public class ChatWindow {
 			}});		
 		frmChatsystemTinfb.getContentPane().add(btnSend);		
 		JList listMembers = new JList();
-		listMembers.setBounds(675, 11, 149, 489);
-		frmChatsystemTinfb.getContentPane().add(listMembers);
+		JScrollPane membersScrollPane = new JScrollPane(listMembers);
+		membersScrollPane.setVerticalScrollBarPolicy(
+		                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		membersScrollPane.setBounds(675, 11, 149, 489);
+		frmChatsystemTinfb.getContentPane().add(membersScrollPane);
 		// Fokus in Eingabefeld setzen
 		frmChatsystemTinfb.addWindowListener( new WindowAdapter() {
 			@Override
