@@ -95,7 +95,7 @@ public void writeDataBase(Message message) throws Exception {
 	    // Setup the connection with the DB
 	    connect = DriverManager
 	        .getConnection("jdbc:mysql://localhost/chatvs?"
-	            + "user=admin&password=admin"); 
+	            + "user=" + this.chatusername + "&password=" + this.chatpw); 
 	    // Statements allow to issue SQL queries to the database
 	    statement = connect.createStatement();
 	    // Result set get the result of the SQL query
@@ -165,7 +165,7 @@ private void close() {
 	    dao.readDataBase();
 	    System.out.println("ausgabe vor Änderung");
 	    Message nachricht = new Message(new User("andreas"), "hallo tinf12b4");
-	    dao.writeDataBase(nachricht);
+	    //dao.writeDataBase(nachricht);
 		
 	}
 }
