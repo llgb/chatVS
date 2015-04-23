@@ -5,8 +5,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -25,6 +27,9 @@ public class ChatWindow {
 	private JTextField tfEingabe;
 	private JTextPane paneMessages;
 	private JScrollPane scrollPane;
+	private JScrollPane membersScrollPane; 
+	private JList listMembers;
+	private DefaultListModel listModelMembers;
 	private ChatWindow window;
 	private List<Message> messagelist;
 	private MySQLAccess dao;
@@ -41,8 +46,9 @@ public class ChatWindow {
 	public ChatWindow(String username) throws Exception {
 		initialize();
 		this.frmChatsystemTinfb.setVisible(true);
-		this.dao = new MySQLAccess();
+		this.dao = new MySQLAccess();		
 		this.user = new User(username);
+		loadMemberList();
 	}
 
 	public void addSingleMessage(Message message) {
@@ -81,7 +87,24 @@ public class ChatWindow {
 		}
 
 	}
-
+	public void loadMemberList() {		
+		try {
+			List<User> dbCurrentUsers = new ArrayList<User>();
+			dbCurrentUsers = this.dao.getCurrentUsers();
+			for (User user : dbCurrentUsers){
+				this.listModelMembers.addElement(user.getUsername());
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void addMemberToList(User user) {
+		listModelMembers.addElement(user.getUsername());		
+	}
+	public void removeMemberFromList(User user) {
+		listModelMembers.addElement(user.getUsername());		
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -127,8 +150,9 @@ public class ChatWindow {
 			}
 		});
 		frmChatsystemTinfb.getContentPane().add(btnSend);
-		JList listMembers = new JList();
-		JScrollPane membersScrollPane = new JScrollPane(listMembers);
+		listModelMembers = new DefaultListModel();
+		listMembers = new JList(listModelMembers);
+		membersScrollPane = new JScrollPane(listMembers);
 		membersScrollPane
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		membersScrollPane.setBounds(675, 11, 149, 489);

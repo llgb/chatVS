@@ -145,5 +145,24 @@ public class MySQLAccess {
 		
 		return newestMessagesList;
 	}
+	
+	public List<User> getCurrentUsers() throws SQLException {
+		this.connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
+						+ "user="+ this.chatusername + "&password="+ this.chatpw);
+
+		// Statements allow to issue SQL queries to the database
+		this.statement = this.connect.createStatement();
+		// Result set get the result of the SQL query
+		this.resultSet = this.statement.executeQuery("select * from chatvs.users" );
+		
+		final List<User> currentUsersList = new ArrayList<User>();
+		
+		while (this.resultSet.next()) {              
+	        User tmpUser = new User(resultSet.getString(2));
+            currentUsersList.add(tmpUser);
+		}
+		
+		return currentUsersList;
+	}
 
 }
