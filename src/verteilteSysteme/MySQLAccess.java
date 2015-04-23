@@ -44,7 +44,7 @@ public class MySQLAccess {
 			// Setup the connection with the DB
 			connect = DriverManager
 					.getConnection("jdbc:mysql://localhost/chatvs?"
-							+ "user="+ chatusername + "&password="+ chatpw);
+							+ "user="+ this.chatusername + "&password="+ this.chatpw);
 
 			// Statements allow to issue SQL queries to the database
 			statement = connect.createStatement();
@@ -171,6 +171,22 @@ public class MySQLAccess {
 		System.out.println("ausgabe vor Änderung");
 		Message nachricht = new Message(new User("andreas"), "hallo tinf12b4");
 		dao.writeDataBase(nachricht);
+		System.out.println(dao.countMessages());
+		
+
+	}
+	public int countMessages() throws SQLException {
+		connect = DriverManager
+				.getConnection("jdbc:mysql://localhost/chatvs?"
+						+ "user="+ this.chatusername + "&password="+ this.chatpw);
+
+		// Statements allow to issue SQL queries to the database
+		statement = connect.createStatement();
+		// Result set get the result of the SQL query
+		resultSet = statement
+				.executeQuery("select Count(*) from chatvs.messages");
+		resultSet.first();
+		return resultSet.getInt("COUNT(*)");
 
 	}
 }

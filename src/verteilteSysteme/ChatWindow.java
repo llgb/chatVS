@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,6 +23,8 @@ public class ChatWindow {
 	private JFrame frmChatsystemTinfb;
 	private JTextField tfEingabe;
 	private JTextPane paneMessages;
+	private static ChatWindow window;
+	private static ArrayList<Message> messagelist;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ChatWindow.class);
 
@@ -33,7 +36,7 @@ public class ChatWindow {
 			@Override
 			public void run() {
 				try {
-					ChatWindow window = new ChatWindow();
+					window = new ChatWindow();
 					window.frmChatsystemTinfb.setVisible(true);
 					window.addStringMessage("test line 1");
 					window.addStringMessage("test line 2");
@@ -42,7 +45,24 @@ public class ChatWindow {
 					e.printStackTrace();
 				}
 			}
+			
 		});
+		// Update Thread
+		new Thread(new Runnable(){
+			@Override
+	            public void run() {
+	                try {
+	                	while(true){
+	                		Thread.sleep(200);
+	                	}
+						
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	            }
+		}).start();;
+		
 	}
 
 	/**
@@ -51,7 +71,7 @@ public class ChatWindow {
 	public ChatWindow() {
 		initialize();
 	}
-	public void addMessage(Message message) {		
+	public void addSingleMessage(Message message) {		
 		try {
 			Document doc = paneMessages.getDocument();
 			doc.insertString(doc.getLength(), message.toString() +"\n", null);
@@ -59,7 +79,12 @@ public class ChatWindow {
 			exc.printStackTrace();
 		}		
 	}
-	public void addStringMessage(String s) {		
+	public void addMessageList(ArrayList<Message> messageList) {		
+		for (Message nachricht : messageList){
+		addSingleMessage(nachricht);
+		}		
+	}
+	public void addStringMessage(String s) {	//für Nachricht direkt zum UI hinzu		
 		try {
 			Document doc = paneMessages.getDocument();
 			doc.insertString(doc.getLength(), s +"\n", null);
