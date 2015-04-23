@@ -193,10 +193,10 @@ public class MySQLAccess {
 		this.connect = DriverManager
 				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
 						+ this.chatusername + "&password=" + this.chatpw);
-		System.out.println("lösche user: " + user.getUsername());
 		this.preparedStatement = connect.prepareStatement("DELETE  from chatvs.users WHERE username= ? ; ");
 		this.preparedStatement.setString(1, user.getUsername());
 		this.preparedStatement.executeUpdate();
+		closeQuietly();
 		
 	}
 	public void addUserToDB(User user) throws SQLException {
