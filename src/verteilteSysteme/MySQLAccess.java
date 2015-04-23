@@ -14,14 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MySQLAccess {
-	private Connection connect                  = null;
-	private Statement statement                 = null;
+	private Connection connect = null;
+	private Statement statement = null;
 	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet                 = null;
+	private ResultSet resultSet = null;
 	private final String chatusername;
 	private final String chatpw;
-	
-	private static final Logger logger = LoggerFactory.getLogger(MySQLAccess.class);
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(MySQLAccess.class);
 
 	public MySQLAccess() throws Exception {
 		super();
@@ -29,7 +30,7 @@ public class MySQLAccess {
 		this.chatpw = System.getenv("chatvs_pw");
 
 		if (this.chatusername == null || this.chatpw == null) {
-			throw new Exception("Systemvariable nicht gesetzt!");		
+			throw new Exception("Systemvariable nicht gesetzt!");
 		} else {
 			logger.info("DB User: {}", chatusername);
 			logger.info("DB Password: {}", chatpw);
@@ -37,27 +38,31 @@ public class MySQLAccess {
 	}
 
 	public void readDataBase() throws SQLException {
-		this.connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
-						+ "user="+ this.chatusername + "&password="+ this.chatpw);
+		this.connect = DriverManager
+				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
+						+ this.chatusername + "&password=" + this.chatpw);
 
 		// Statements allow to issue SQL queries to the database
 		this.statement = connect.createStatement();
 		// Result set get the result of the SQL query
-		this.resultSet = statement.executeQuery("select * from chatvs.messages");
+		this.resultSet = statement
+				.executeQuery("select * from chatvs.messages");
 		writeResultSet(this.resultSet);
 		closeQuietly();
 	}
 
 	public void writeToDataBase(final Message message) throws SQLException {
 		// This will load the MySQL driver, each DB has its own driver
-		//Class.forName("com.mysql.jdbc.Driver");
+		// Class.forName("com.mysql.jdbc.Driver");
 		// Setup the connection with the DB
-		this.connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
-						+ "user=" + this.chatusername + "&password=" + this.chatpw); 
+		this.connect = DriverManager
+				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
+						+ this.chatusername + "&password=" + this.chatpw);
 		// Statements allow to issue SQL queries to the database
 		this.statement = connect.createStatement();
 		// Result set get the result of the SQL query
-		this.preparedStatement = connect.prepareStatement("insert into  chatvs.messages values (default, ?, ?, ?)");
+		this.preparedStatement = connect
+				.prepareStatement("insert into  chatvs.messages values (default, ?, ?, ?)");
 		// Parameters start with 1
 		this.preparedStatement.setString(1, message.getOwner().getUsername());
 		this.preparedStatement.setString(2, message.getContent());
@@ -67,14 +72,15 @@ public class MySQLAccess {
 	}
 
 	private void writeMetaData(final ResultSet resultSet) throws SQLException {
-		//   Now get some metadata from the database
+		// Now get some metadata from the database
 		// Result set get the result of the SQL query
 
 		System.out.println("The columns in the table are: ");
 
 		System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
-		for  (int i = 1; i<= resultSet.getMetaData().getColumnCount(); i++){
-			System.out.println("Column " +i  + " "+ resultSet.getMetaData().getColumnName(i));
+		for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+			System.out.println("Column " + i + " "
+					+ resultSet.getMetaData().getColumnName(i));
 		}
 	}
 
@@ -82,7 +88,7 @@ public class MySQLAccess {
 		while (resultSet.next()) {
 			final String zeit = resultSet.getString("timestamp");
 			final String owner = resultSet.getString("owner");
-			final String content = resultSet.getString("content");    
+			final String content = resultSet.getString("content");
 
 			System.out.println("Timestamp: " + zeit);
 			System.out.println("Owner: " + owner);
@@ -111,9 +117,8 @@ public class MySQLAccess {
 	}
 
 	public int countMessages() throws SQLException {
-		connect = DriverManager
-				.getConnection("jdbc:mysql://localhost/chatvs?"
-						+ "user="+ this.chatusername + "&password="+ this.chatpw);
+		connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
+				+ "user=" + this.chatusername + "&password=" + this.chatpw);
 
 		// Statements allow to issue SQL queries to the database
 		statement = connect.createStatement();
@@ -124,45 +129,89 @@ public class MySQLAccess {
 		return resultSet.getInt("COUNT(*)");
 
 	}
-	
+	public int countUsers() throws SQLException {
+		connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
+				+ "user=" + this.chatusername + "&password=" + this.chatpw);
+
+		// Statements allow to issue SQL queries to the database
+		statement = connect.createStatement();
+		// Result set get the result of the SQL query
+		resultSet = statement
+				.executeQuery("select Count(*) from chatvs.users");
+		resultSet.first();
+		return resultSet.getInt("COUNT(*)");
+
+	}
+
 	public List<Message> getLatestMessages(int nr) throws SQLException {
-		this.connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
-						+ "user="+ this.chatusername + "&password="+ this.chatpw);
+		this.connect = DriverManager
+				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
+						+ this.chatusername + "&password=" + this.chatpw);
 
 		// Statements allow to issue SQL queries to the database
 		this.statement = this.connect.createStatement();
 		// Result set get the result of the SQL query
-		this.resultSet = this.statement.executeQuery("select * from chatvs.messages ORDER BY idmessages DESC LIMIT " + nr);
-		
+		this.resultSet = this.statement
+				.executeQuery("select * from chatvs.messages ORDER BY idmessages DESC LIMIT "
+						+ nr);
+
 		final List<Message> newestMessagesList = new ArrayList<Message>();
 		ResultSetMetaData metadata = this.resultSet.getMetaData();
 		int numberOfColumns = metadata.getColumnCount();
-		
-		while (this.resultSet.next()) {              
-	        Message tmpMessage = new Message(new User(resultSet.getString(2)), resultSet.getString(3), resultSet.getTimestamp(4));
-            newestMessagesList.add(tmpMessage);
+
+		while (this.resultSet.next()) {
+			Message tmpMessage = new Message(new User(resultSet.getString(2)),
+					resultSet.getString(3), resultSet.getTimestamp(4));
+			newestMessagesList.add(tmpMessage);
 		}
-		
+
 		return newestMessagesList;
 	}
-	
+
 	public List<User> getCurrentUsers() throws SQLException {
-		this.connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
-						+ "user="+ this.chatusername + "&password="+ this.chatpw);
+		this.connect = DriverManager
+				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
+						+ this.chatusername + "&password=" + this.chatpw);
 
 		// Statements allow to issue SQL queries to the database
 		this.statement = this.connect.createStatement();
 		// Result set get the result of the SQL query
-		this.resultSet = this.statement.executeQuery("select * from chatvs.users" );
-		
+		this.resultSet = this.statement
+				.executeQuery("select * from chatvs.users");
+
 		final List<User> currentUsersList = new ArrayList<User>();
-		
-		while (this.resultSet.next()) {              
-	        User tmpUser = new User(resultSet.getString(2));
-            currentUsersList.add(tmpUser);
+
+		while (this.resultSet.next()) {
+			User tmpUser = new User(resultSet.getString(2));
+			currentUsersList.add(tmpUser);
 		}
-		
+
 		return currentUsersList;
 	}
 
+	public void removeUserfromDB(User user) throws SQLException {
+		this.connect = DriverManager
+				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
+						+ this.chatusername + "&password=" + this.chatpw);
+		System.out.println("lösche user: " + user.getUsername());
+		this.preparedStatement = connect.prepareStatement("DELETE  from chatvs.users WHERE username= ? ; ");
+		this.preparedStatement.setString(1, user.getUsername());
+		this.preparedStatement.executeUpdate();
+		
+	}
+	public void addUserToDB(User user) throws SQLException {
+		this.connect = DriverManager
+				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
+						+ this.chatusername + "&password=" + this.chatpw);
+		// Statements allow to issue SQL queries to the database
+		this.statement = connect.createStatement();
+		// Result set get the result of the SQL query
+		this.preparedStatement = connect
+				.prepareStatement("insert into  chatvs.users values (default, ?, ?)");
+		// Parameters start with 1
+		this.preparedStatement.setString(1, user.getUsername());
+		this.preparedStatement.setString(2, user.getPasswordhash());
+		this.preparedStatement.executeUpdate();
+		closeQuietly();
+	}
 }

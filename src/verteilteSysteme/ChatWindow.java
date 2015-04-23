@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ChatWindow {
 	private JTextField tfEingabe;
 	private JTextPane paneMessages;
 	private JScrollPane scrollPane;
-	private JScrollPane membersScrollPane; 
+	private JScrollPane membersScrollPane;
 	private JList listMembers;
 	private DefaultListModel listModelMembers;
 	private ChatWindow window;
@@ -46,8 +47,9 @@ public class ChatWindow {
 	public ChatWindow(String username) throws Exception {
 		initialize();
 		this.frmChatsystemTinfb.setVisible(true);
-		this.dao = new MySQLAccess();		
+		this.dao = new MySQLAccess();
 		this.user = new User(username);
+		addMemberToList(this.user);
 		loadMemberList();
 	}
 
@@ -87,11 +89,12 @@ public class ChatWindow {
 		}
 
 	}
-	public void loadMemberList() {		
+
+	public void loadMemberList() {
 		try {
 			List<User> dbCurrentUsers = new ArrayList<User>();
 			dbCurrentUsers = this.dao.getCurrentUsers();
-			for (User user : dbCurrentUsers){
+			for (User user : dbCurrentUsers) {
 				this.listModelMembers.addElement(user.getUsername());
 			}
 		} catch (SQLException e) {
@@ -99,12 +102,35 @@ public class ChatWindow {
 			e.printStackTrace();
 		}
 	}
+
 	public void addMemberToList(User user) {
-		listModelMembers.addElement(user.getUsername());		
+		try {
+			this.dao.addUserToDB(user);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
+
+	public void addMemberListToList(List<User> newUsers) {
+		this.listModelMembers.clear();
+		for (User user : newUsers) {
+			this.listModelMembers.addElement(user.getUsername());
+		}
+
+	}
+
 	public void removeMemberFromList(User user) {
-		listModelMembers.addElement(user.getUsername());		
+		try {
+			this.dao.removeUserfromDB(user);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
+
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -115,6 +141,51 @@ public class ChatWindow {
 		frmChatsystemTinfb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChatsystemTinfb.getContentPane().setLayout(null);
 		frmChatsystemTinfb.setResizable(false);
+		frmChatsystemTinfb.addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				removeMemberFromList(user);
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		;
 
 		paneMessages = new JTextPane();
 		paneMessages.setEditable(false);

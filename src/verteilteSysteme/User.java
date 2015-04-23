@@ -2,7 +2,7 @@ package verteilteSysteme;
 
 public class User {
 	private String username;
-	private String passwordhash;
+	private String passwordhash="";
 
 
 	public String getPasswordhash() {

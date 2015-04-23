@@ -4,7 +4,7 @@ public class Bootstrap {
 	public static void main(String[] args) {
 
 		try {
-			ChatWindow window = new ChatWindow("klaus");
+			ChatWindow window = new ChatWindow("klaus1");
 			Thread pollthread;
 			pollthread = new Thread(new PollThread(window));
 			pollthread.start();
