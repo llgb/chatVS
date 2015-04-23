@@ -110,17 +110,6 @@ public class MySQLAccess {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-//		MySQLAccess dao = new MySQLAccess();
-//		dao.readDataBase();
-//		System.out.println("ausgabe vor Änderung");
-//		Message nachricht = new Message(new User("andreas"), "hallo tinf12b4");
-//		dao.writeDataBase(nachricht);
-//		System.out.println(dao.countMessages());
-		
-
-	}
-	
 	public int countMessages() throws SQLException {
 		connect = DriverManager
 				.getConnection("jdbc:mysql://localhost/chatvs?"
