@@ -15,17 +15,17 @@ public class MySQLAccess {
 	private Statement statement                 = null;
 	private PreparedStatement preparedStatement = null;
 	private ResultSet resultSet                 = null;
-	final String chatusername;
-	final String chatpw;
+	private final String chatusername;
+	private final String chatpw;
 	
 	private static final Logger logger = LoggerFactory.getLogger(MySQLAccess.class);
 
 	public MySQLAccess() throws Exception {
 		super();
-		chatusername = System.getenv("chatvs_user");
-		chatpw = System.getenv("chatvs_pw");
+		this.chatusername = System.getenv("chatvs_user");
+		this.chatpw = System.getenv("chatvs_pw");
 
-		if (chatusername == null || chatpw == null) {
+		if (this.chatusername == null || this.chatpw == null) {
 			throw new Exception("Systemvariable nicht gesetzt!");		
 		} else {
 			logger.info("DB User: {}", chatusername);
@@ -41,11 +41,11 @@ public class MySQLAccess {
 		this.statement = connect.createStatement();
 		// Result set get the result of the SQL query
 		this.resultSet = statement.executeQuery("select * from chatvs.messages");
-		writeResultSet(resultSet);
+		writeResultSet(this.resultSet);
 		closeQuietly();
 	}
 
-	public void writeDataBase(Message message) throws SQLException {
+	public void writeDataBase(final Message message) throws SQLException {
 		// This will load the MySQL driver, each DB has its own driver
 		//Class.forName("com.mysql.jdbc.Driver");
 		// Setup the connection with the DB
@@ -63,7 +63,7 @@ public class MySQLAccess {
 		closeQuietly();
 	}
 
-	private void writeMetaData(ResultSet resultSet) throws SQLException {
+	private void writeMetaData(final ResultSet resultSet) throws SQLException {
 		//   Now get some metadata from the database
 		// Result set get the result of the SQL query
 
@@ -75,11 +75,11 @@ public class MySQLAccess {
 		}
 	}
 
-	private void writeResultSet(ResultSet resultSet) throws SQLException {
+	private void writeResultSet(final ResultSet resultSet) throws SQLException {
 		while (resultSet.next()) {
-			String zeit = resultSet.getString("timestamp");
-			String owner = resultSet.getString("owner");
-			String content = resultSet.getString("content");    
+			final String zeit = resultSet.getString("timestamp");
+			final String owner = resultSet.getString("owner");
+			final String content = resultSet.getString("content");    
 
 			System.out.println("Timestamp: " + zeit);
 			System.out.println("Owner: " + owner);
@@ -91,16 +91,16 @@ public class MySQLAccess {
 	// You need to close the resultSet
 	private void closeQuietly() {
 		try {
-			if (resultSet != null) {
-				resultSet.close();
+			if (this.resultSet != null) {
+				this.resultSet.close();
 			}
 
-			if (statement != null) {
-				statement.close();
+			if (this.statement != null) {
+				this.statement.close();
 			}
 
-			if (connect != null) {
-				connect.close();
+			if (this.connect != null) {
+				this.connect.close();
 			}
 		} catch (SQLException e) {
 			logger.error("closeQuietly eats exception: {}", e.getMessage());
