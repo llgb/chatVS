@@ -48,7 +48,7 @@ public class MySQLAccess {
 		closeQuietly();
 	}
 
-	public void writeDataBase(final Message message) throws SQLException {
+	public void writeToDataBase(final Message message) throws SQLException {
 		// This will load the MySQL driver, each DB has its own driver
 		//Class.forName("com.mysql.jdbc.Driver");
 		// Setup the connection with the DB
