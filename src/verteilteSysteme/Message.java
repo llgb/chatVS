@@ -8,8 +8,8 @@ public class Message {
 	private User owner;
 	private String content;
 	private Timestamp timestamp;
-	
-	
+
+
 	public User getOwner() {
 		return owner;
 	}
@@ -22,7 +22,7 @@ public class Message {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}
@@ -31,7 +31,7 @@ public class Message {
 		String timestampFormatted = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(this.timestamp);
 		return  timestampFormatted + " " + this.getOwner().getUsername() + ": " + this.getContent();
 	}
-	
+
 	private Timestamp generateTimestamp() {
 		// 1) create a java calendar instance
 		Calendar calendar = Calendar.getInstance();		 
@@ -40,7 +40,7 @@ public class Message {
 		java.util.Date now = calendar.getTime();		 
 		// 3) a java current time (now) instance
 		java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
-		
+
 		return currentTimestamp;
 	}
 	public Message(User owner, String content) {
@@ -49,6 +49,6 @@ public class Message {
 		this.content = content;
 		this.timestamp = generateTimestamp();
 	}
-	
-	
+
+
 }
