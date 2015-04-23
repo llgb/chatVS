@@ -24,8 +24,7 @@ public class ChatWindow {
 	private JFrame frmChatsystemTinfb;
 	private JTextField tfEingabe;
 	private JTextPane paneMessages;
-	private static ChatWindow window;
-	private static ArrayList<Message> messagelist;
+	private List<Message> messagelist;
 	
 	private static final Logger logger = LoggerFactory.getLogger(ChatWindow.class);
 
