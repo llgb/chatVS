@@ -50,5 +50,10 @@ public class Message {
 		this.timestamp = generateTimestamp();
 	}
 
-
+	public Message(User owner, String content, Timestamp timestamp) {
+		super();
+		this.owner = owner;
+		this.content = content;
+		this.timestamp = timestamp;
+	}
 }

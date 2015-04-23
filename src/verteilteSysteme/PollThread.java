@@ -2,43 +2,46 @@ package verteilteSysteme;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class PollThread {
-	private Thread thread;
-	private int numberOfMessages=0;
-	private MySQLAccess dao;
-	ArrayList<Message> loadMessages = new ArrayList<Message>();
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class PollThread implements Runnable {
+	private int numberOfCachedMessages = 0;
+	private final MySQLAccess dao;
+	private List<Message> newMessages = new ArrayList<Message>();
+	private final ChatWindow window;
 	
-	public PollThread(ChatWindow chatfenster) throws Exception {
-		
+	private static final Logger logger = LoggerFactory.getLogger(PollThread.class);
+	
+	public PollThread(ChatWindow window) throws Exception {
 		super();
-		dao = new MySQLAccess();
-		 
-		this.thread = new Thread(new Runnable(){
-			@Override
-	            public void run() {
-	                try {
-	                	while(true){
-	                		int currentInDBMessages = dao.countMessages();	                		
-	                		int messageDifference = currentInDBMessages - numberOfMessages;
-	                		System.out.println("Nachrichtenanzahl beträgt: " + currentInDBMessages);
-	                		System.out.println("Nachrichtendifferenz beträgt: " + messageDifference);
-	                		if (messageDifference > 0 ) {
-	                			loadMessages = dao.getLatestMessages(messageDifference);
-	                			numberOfMessages = loadMessages.size();
-	                			chatfenster.addMessageList(loadMessages);
-	                		}
-	                		Thread.sleep(500);
-	                	}
-						
-					} catch (InterruptedException | SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	            }
-		});
-		thread.start();
+		this.dao = new MySQLAccess();
+		this.window = window;
 	}
-	
 
+	@Override
+	public void run() {
+        try {
+        	while (true) {
+	    		int currentInDBMessages = dao.countMessages();	                		
+	    		int messageDifference = currentInDBMessages - this.numberOfCachedMessages;
+	    		logger.info("Nachrichtenanzahl beträgt: {}", currentInDBMessages);
+	    		logger.info("Nachrichtendifferenz beträgt: {}", messageDifference);
+	    		
+	    		if (messageDifference > 0 ) {
+	    			this.newMessages = dao.getLatestMessages(messageDifference);
+	    			this.numberOfCachedMessages = currentInDBMessages;
+	    			this.window.addMessageList(newMessages);
+	    			this.newMessages.clear();
+	    		}
+	    		
+	    		logger.info("Thread going to sleep ...");
+	    		Thread.sleep(500);	
+        	}
+		} catch (InterruptedException | SQLException e) {
+			e.printStackTrace();
+		}
+    }
 }

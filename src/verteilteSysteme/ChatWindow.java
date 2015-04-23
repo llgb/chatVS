@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -30,26 +31,31 @@ public class ChatWindow {
 
 	/**
 	 * Launch the application.
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					window = new ChatWindow();
-					window.frmChatsystemTinfb.setVisible(true);
-					window.addStringMessage("test line 1");
-					window.addStringMessage("test line 2");
-					PollThread pollthread = new PollThread(window);
-					
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-		});
-
+	public static void main(String[] args) throws Exception {
+//		EventQueue.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				try {
+//					window = new ChatWindow();
+//					window.frmChatsystemTinfb.setVisible(true);
+//					window.addStringMessage("test line 1");
+//					window.addStringMessage("test line 2");
+//					Thread pollthread = new Thread(new PollThread(window));
+//					pollthread.start();
+//
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			
+//		});
+		
+		ChatWindow window = new ChatWindow();
+		window.frmChatsystemTinfb.setVisible(true);
+		Thread pollthread = new Thread(new PollThread(window));
+		pollthread.start();
 		
 		
 	}
@@ -68,9 +74,9 @@ public class ChatWindow {
 			exc.printStackTrace();
 		}		
 	}
-	public void addMessageList(ArrayList<Message> messageList) {		
-		for (Message nachricht : messageList){
-		addSingleMessage(nachricht);
+	public void addMessageList(List<Message> messageList) {		
+		for (int i = messageList.size() - 1; i >= 0 ; i--) {
+			addSingleMessage(messageList.get(i));
 		}		
 	}
 	public void addStringMessage(String s) {	//für Nachricht direkt zum UI hinzu		
@@ -109,10 +115,10 @@ public class ChatWindow {
 		JButton btnSend = new JButton("Senden");
 		btnSend.setBounds(675, 511, 149, 39);
 		btnSend.addActionListener(new java.awt.event.ActionListener() {
-			// Beim Dr�cken des Men�punktes wird actionPerformed aufgerufen
+			// Beim Drücken des Menüpunktes wird actionPerformed aufgerufen
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				//Aktion ausf�hren
+				//Aktion ausführen
 				sendMessage(tfEingabe.getText());
 			}
 		});

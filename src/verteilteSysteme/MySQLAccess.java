@@ -8,6 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,15 +111,16 @@ public class MySQLAccess {
 	}
 
 	public static void main(String[] args) throws Exception {
-		MySQLAccess dao = new MySQLAccess();
-		dao.readDataBase();
-		System.out.println("ausgabe vor Änderung");
-		Message nachricht = new Message(new User("andreas"), "hallo tinf12b4");
-		dao.writeDataBase(nachricht);
-		System.out.println(dao.countMessages());
+//		MySQLAccess dao = new MySQLAccess();
+//		dao.readDataBase();
+//		System.out.println("ausgabe vor Änderung");
+//		Message nachricht = new Message(new User("andreas"), "hallo tinf12b4");
+//		dao.writeDataBase(nachricht);
+//		System.out.println(dao.countMessages());
 		
 
 	}
+	
 	public int countMessages() throws SQLException {
 		connect = DriverManager
 				.getConnection("jdbc:mysql://localhost/chatvs?"
@@ -133,28 +135,25 @@ public class MySQLAccess {
 		return resultSet.getInt("COUNT(*)");
 
 	}
-	public ArrayList<Message> getLatestMessages(int anzahl) throws SQLException {
-		connect = DriverManager
-				.getConnection("jdbc:mysql://localhost/chatvs?"
+	
+	public List<Message> getLatestMessages(int nr) throws SQLException {
+		this.connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
 						+ "user="+ this.chatusername + "&password="+ this.chatpw);
 
 		// Statements allow to issue SQL queries to the database
-		statement = connect.createStatement();
+		this.statement = this.connect.createStatement();
 		// Result set get the result of the SQL query
-		resultSet = statement
-				.executeQuery("select * from chatvs.messages LIMIT "+anzahl);
+		this.resultSet = this.statement.executeQuery("select * from chatvs.messages ORDER BY idmessages DESC LIMIT " + nr);
 		
-		ArrayList<Message> newestMessagesList = new ArrayList<Message>();
-		ResultSetMetaData metadata = resultSet.getMetaData();
+		final List<Message> newestMessagesList = new ArrayList<Message>();
+		ResultSetMetaData metadata = this.resultSet.getMetaData();
 		int numberOfColumns = metadata.getColumnCount();
-		while (resultSet.next()) {              
-		        int i = 1;
-		        Message tmpMessage;
-		        while(i <= numberOfColumns) {
-		        	tmpMessage = new Message(new User(resultSet.getString(2)), resultSet.getString(3));
-		            newestMessagesList.add(tmpMessage);
-		        }
+		
+		while (this.resultSet.next()) {              
+	        Message tmpMessage = new Message(new User(resultSet.getString(2)), resultSet.getString(3), resultSet.getTimestamp(4));
+            newestMessagesList.add(tmpMessage);
 		}
+		
 		return newestMessagesList;
 	}
 
