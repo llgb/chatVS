@@ -40,6 +40,8 @@ public class ChatWindow {
 					window.frmChatsystemTinfb.setVisible(true);
 					window.addStringMessage("test line 1");
 					window.addStringMessage("test line 2");
+					PollThread pollthread = new PollThread(window);
+					
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -47,21 +49,8 @@ public class ChatWindow {
 			}
 			
 		});
-		// Update Thread
-		new Thread(new Runnable(){
-			@Override
-	            public void run() {
-	                try {
-	                	while(true){
-	                		Thread.sleep(200);
-	                	}
-						
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	            }
-		}).start();;
+
+		
 		
 	}
 

@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,6 +132,30 @@ public class MySQLAccess {
 		resultSet.first();
 		return resultSet.getInt("COUNT(*)");
 
+	}
+	public ArrayList<Message> getLatestMessages(int anzahl) throws SQLException {
+		connect = DriverManager
+				.getConnection("jdbc:mysql://localhost/chatvs?"
+						+ "user="+ this.chatusername + "&password="+ this.chatpw);
+
+		// Statements allow to issue SQL queries to the database
+		statement = connect.createStatement();
+		// Result set get the result of the SQL query
+		resultSet = statement
+				.executeQuery("select * from chatvs.messages LIMIT "+anzahl);
+		
+		ArrayList<Message> newestMessagesList = new ArrayList<Message>();
+		ResultSetMetaData metadata = resultSet.getMetaData();
+		int numberOfColumns = metadata.getColumnCount();
+		while (resultSet.next()) {              
+		        int i = 1;
+		        Message tmpMessage;
+		        while(i <= numberOfColumns) {
+		        	tmpMessage = new Message(new User(resultSet.getString(2)), resultSet.getString(3));
+		            newestMessagesList.add(tmpMessage);
+		        }
+		}
+		return newestMessagesList;
 	}
 
 }
