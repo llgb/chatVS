@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -26,53 +27,61 @@ public class ChatWindow {
 	private JScrollPane scrollPane;
 	private ChatWindow window;
 	private List<Message> messagelist;
-	
-	private static final Logger logger = LoggerFactory.getLogger(ChatWindow.class);
+	private MySQLAccess dao;
+	private User user;
 
-	/**
-	 * Launch the application.
-	 * @throws Exception 
-	 */
-	public static void main(String[] args) throws Exception {
-		ChatWindow window = new ChatWindow();
-		window.frmChatsystemTinfb.setVisible(true);
-		Thread pollthread = new Thread(new PollThread(window));
-		pollthread.start();
-			
-	}
+	private static final Logger logger = LoggerFactory
+			.getLogger(ChatWindow.class);
 
 	/**
 	 * Create the application.
+	 * 
+	 * @throws Exception
 	 */
-	public ChatWindow() {
+	public ChatWindow(String username) throws Exception {
 		initialize();
+		this.frmChatsystemTinfb.setVisible(true);
+		this.dao = new MySQLAccess();
+		this.user = new User(username);
 	}
-	public void addSingleMessage(Message message) {		
+
+	public void addSingleMessage(Message message) {
 		try {
 			Document doc = paneMessages.getDocument();
-			doc.insertString(doc.getLength(), message.toString() +"\n", null);
-		} catch(BadLocationException exc) {
+			doc.insertString(doc.getLength(), message.toString() + "\n", null);
+		} catch (BadLocationException exc) {
 			exc.printStackTrace();
-		}		
+		}
 	}
-	public void addMessageList(List<Message> messageList) {		
-		for (int i = messageList.size() - 1; i >= 0 ; i--) {
+
+	public void addMessageList(List<Message> messageList) {
+		for (int i = messageList.size() - 1; i >= 0; i--) {
 			addSingleMessage(messageList.get(i));
-		}		
+		}
 	}
-	public void addStringMessage(String s) {	//für Nachricht direkt zum UI hinzu		
+
+	public void addStringMessage(String s) { // für Nachricht direkt zum UI
+												// hinzu
 		try {
 			Document doc = paneMessages.getDocument();
-			doc.insertString(doc.getLength(), s +"\n", null);
-		} catch(BadLocationException exc) {
+			doc.insertString(doc.getLength(), s + "\n", null);
+		} catch (BadLocationException exc) {
 			exc.printStackTrace();
-		}		
+		}
 	}
-	public void sendMessage(String message) {
-		addStringMessage(message);
-		tfEingabe.setText("");
-		tfEingabe.requestFocusInWindow();
+
+	public void sendMessage(String messageString) {
+		try {
+			this.dao.writeToDataBase(new Message(user, messageString));
+			tfEingabe.setText("");
+			tfEingabe.requestFocusInWindow();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
+
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -88,10 +97,10 @@ public class ChatWindow {
 		paneMessages.setEditable(false);
 		scrollPane = new JScrollPane();
 		JScrollPane messagesScrollPane = new JScrollPane(paneMessages);
-		messagesScrollPane.setVerticalScrollBarPolicy(
-		                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		messagesScrollPane
+				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		messagesScrollPane.setBounds(10, 11, 655, 489);
-		
+
 		frmChatsystemTinfb.getContentPane().add(messagesScrollPane);
 
 		tfEingabe = new JTextField();
@@ -105,33 +114,32 @@ public class ChatWindow {
 			// Beim Drücken des Menüpunktes wird actionPerformed aufgerufen
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
-				//Aktion ausführen
+				// Aktion ausführen
 				sendMessage(tfEingabe.getText());
 			}
 		});
-		tfEingabe.addActionListener(new ActionListener(){
+		tfEingabe.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent e) {
 				sendMessage(tfEingabe.getText());
 
-			}});		
-		frmChatsystemTinfb.getContentPane().add(btnSend);		
+			}
+		});
+		frmChatsystemTinfb.getContentPane().add(btnSend);
 		JList listMembers = new JList();
 		JScrollPane membersScrollPane = new JScrollPane(listMembers);
-		membersScrollPane.setVerticalScrollBarPolicy(
-		                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		membersScrollPane
+				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		membersScrollPane.setBounds(675, 11, 149, 489);
 		frmChatsystemTinfb.getContentPane().add(membersScrollPane);
 		// Fokus in Eingabefeld setzen
-		frmChatsystemTinfb.addWindowListener( new WindowAdapter() {
+		frmChatsystemTinfb.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowOpened( WindowEvent e ){
+			public void windowOpened(WindowEvent e) {
 				tfEingabe.requestFocus();
 			}
 		});
-
-
 
 	}
 
