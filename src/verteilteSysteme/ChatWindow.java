@@ -1,7 +1,11 @@
 package verteilteSysteme;
 
+import java.awt.Color;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -13,11 +17,17 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +37,6 @@ public class ChatWindow {
 	private JFrame frmChatsystemTinfb;
 	private JTextField tfEingabe;
 	private JTextPane paneMessages;
-	private JScrollPane scrollPane;
 	private JScrollPane membersScrollPane;
 	private JList listMembers;
 	private DefaultListModel listModelMembers;
@@ -35,6 +44,7 @@ public class ChatWindow {
 	private List<Message> messagelist;
 	private MySQLAccess dao;
 	private User user;
+	private JScrollPane messagesScrollPane;
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(ChatWindow.class);
@@ -56,7 +66,20 @@ public class ChatWindow {
 	public void addSingleMessage(Message message) {
 		try {
 			Document doc = paneMessages.getDocument();
-			doc.insertString(doc.getLength(), message.toString() + "\n", null);
+			StyleContext sc = StyleContext.getDefaultStyleContext();
+			AttributeSet aset;
+			JScrollBar vertical;
+			if (message.getOwner().getUsername().equals(this.user.getUsername())) {
+				aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, new Color(255,0,0));
+				System.out.println("user ist user");
+			}
+			else{
+				aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, new Color(0,0,0));
+			}
+			doc.insertString(doc.getLength(), message.toString() + "\n", aset);
+			
+			paneMessages.setCaretPosition(paneMessages.getDocument().getLength());
+			
 		} catch (BadLocationException exc) {
 			exc.printStackTrace();
 		}
@@ -186,11 +209,10 @@ public class ChatWindow {
 			}
 		});
 		;
-
 		paneMessages = new JTextPane();
+		paneMessages.setMargin(new Insets(5, 5, 5, 5));
 		paneMessages.setEditable(false);
-		scrollPane = new JScrollPane();
-		JScrollPane messagesScrollPane = new JScrollPane(paneMessages);
+		messagesScrollPane = new JScrollPane(paneMessages);
 		messagesScrollPane
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		messagesScrollPane.setBounds(10, 11, 655, 489);
