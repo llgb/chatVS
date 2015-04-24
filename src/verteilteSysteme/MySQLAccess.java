@@ -66,7 +66,7 @@ public class MySQLAccess {
 
 	public void readDataBase() throws SQLException {
 		this.connect = DriverManager
-				.getConnection("jdbc:mysql://"+this.server+"/chatvs?" + "user="
+				.getConnection("jdbc:mysql://"+this.server+":"+port+"/chatvs?" + "user="
 						+ this.chatusername + "&password=" + this.chatpw);
 
 		// Statements allow to issue SQL queries to the database

@@ -55,10 +55,10 @@ public class ChatWindow {
 	 * @throws Exception
 	 */
 	public ChatWindow(String username) throws Exception {
-		initialize();
-		this.frmChatsystemTinfb.setVisible(true);
 		this.dao = new MySQLAccess();
 		this.user = new User(username);
+		initialize();
+		this.frmChatsystemTinfb.setVisible(true);
 		addMemberToList(this.user);
 		loadMemberList();
 	}
