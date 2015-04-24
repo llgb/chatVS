@@ -9,17 +9,17 @@ import org.slf4j.LoggerFactory;
 
 public class PollThread implements Runnable {
 	private int numberOfCachedMessages = 0;
-	private int numberOfCachedUsers = 0;
+	private int numberOfCachedUsers    = 0;
 	private final MySQLAccess dao;
-	private List<Message> newMessages = new ArrayList<Message>();
-	private List<User> newUsers = new ArrayList<User>();
+	private List<Message> newMessages  = new ArrayList<Message>();
+	private List<User> newUsers        = new ArrayList<User>();
 	private final ChatWindow window;
 	
 	private static final Logger logger = LoggerFactory.getLogger(PollThread.class);
 	
-	public PollThread(ChatWindow window) throws Exception {
+	public PollThread(final ChatWindow window, final MySQLAccess dao) throws Exception {
 		super();
-		this.dao = new MySQLAccess();
+		this.dao    = dao;
 		this.window = window;
 	}
 

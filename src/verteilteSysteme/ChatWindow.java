@@ -42,7 +42,7 @@ public class ChatWindow {
 	private DefaultListModel listModelMembers;
 	private ChatWindow window;
 	private List<Message> messagelist;
-	private MySQLAccess dao;
+	private final MySQLAccess dao;
 	private User user;
 	private JScrollPane messagesScrollPane;
 
@@ -54,19 +54,11 @@ public class ChatWindow {
 	 * 
 	 * @throws Exception
 	 */
-	public ChatWindow(String username) throws Exception {
-		this.dao = new MySQLAccess();
+	public ChatWindow(String username, MySQLAccess dao) throws Exception {
+		this.dao = dao;
 		this.user = new User(username);
 		initialize();
 		this.frmChatsystemTinfb.setVisible(true);
-		addMemberToList(this.user);
-		loadMemberList();
-	}
-	public ChatWindow(String server, String dbusername, String dbpassword, String username) throws Exception {
-		this.dao = new MySQLAccess(server, dbusername, dbpassword);
-		this.user = new User(username);
-		initialize();
-		this.frmChatsystemTinfb.setVisible(true);	
 		addMemberToList(this.user);
 		loadMemberList();
 	}
@@ -166,7 +158,7 @@ public class ChatWindow {
 	 */
 	private void initialize() {
 		frmChatsystemTinfb = new JFrame();
-		frmChatsystemTinfb.setTitle("ChatSystem TINF12B4 username: "+ this.user.getUsername()+" server: " + this.dao.getServer());
+		frmChatsystemTinfb.setTitle("ChatSystem TINF12B4 username: "+ this.user.getUsername()+" server: " + this.dao.getServerManager().getActiveServerConnection());
 		frmChatsystemTinfb.setBounds(100, 100, 850, 600);
 		frmChatsystemTinfb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChatsystemTinfb.getContentPane().setLayout(null);

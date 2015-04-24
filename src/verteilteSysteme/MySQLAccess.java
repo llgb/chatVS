@@ -20,57 +20,28 @@ public class MySQLAccess {
 	private ResultSet resultSet = null;
 	private final String chatusername;
 	private final String chatpw;
-	private final String server;
-	private int port = 3306;
+	private final ServerManager serverManager;
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(MySQLAccess.class);
 
-	public MySQLAccess() throws Exception {
+	public MySQLAccess(final ServerManager serverManager) throws Exception {
 		super();
-		this.chatusername = System.getenv("chatvs_user");
-		this.chatpw = System.getenv("chatvs_pw");
-		this.server = "localhost";
+		this.serverManager = serverManager;
+		this.chatusername  = System.getenv("chatvs_user");
+		this.chatpw        = System.getenv("chatvs_pw");
 
 		if (this.chatusername == null || this.chatpw == null) {
 			throw new Exception("Systemvariable nicht gesetzt!");
 		} else {
-			logger.info("DB User: {}", chatusername);
-			logger.info("DB Password: {}", chatpw);
-			logger.info("DB Server: {}", server);
-			logger.info("DB Port: {}", port);
+			logger.info("DB connection: {}", this.serverManager.getActiveServerConnection());
+			logger.info("DB User: {}", this.chatusername);
+			logger.info("DB Password: {}", this.chatpw);
 		}
 	}
 
-	public MySQLAccess(String server, String username, String password) {
-		super();
-		this.server = server;
-		this.chatusername = username;
-		this.chatpw = password;
-		logger.info("DB User: {}", chatusername);
-		logger.info("DB Password: {}", chatpw);
-		logger.info("DB Server: {}", server);
-		logger.info("DB Port: {}", port);
-	}
-
-	public MySQLAccess(String server, int portnumber, String username,
-			String password) {
-		super();
-		this.server = server;
-		this.chatusername = username;
-		this.chatpw = password;
-		this.port = portnumber;
-		logger.info("DB User: {}", chatusername);
-		logger.info("DB Password: {}", chatpw);
-		logger.info("DB Server: {}", server);
-		logger.info("DB Port: {}", port);
-
-	}
-
 	public void readDataBase() throws SQLException {
-		this.connect = DriverManager.getConnection("jdbc:mysql://"
-				+ this.server + ":" + port + "/chatvs?" + "user="
-				+ this.chatusername + "&password=" + this.chatpw);
+		this.connect = this.getConnection();
 
 		// Statements allow to issue SQL queries to the database
 		this.statement = connect.createStatement();
@@ -85,9 +56,7 @@ public class MySQLAccess {
 		// This will load the MySQL driver, each DB has its own driver
 		// Class.forName("com.mysql.jdbc.Driver");
 		// Setup the connection with the DB
-		this.connect = DriverManager
-				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
-						+ this.chatusername + "&password=" + this.chatpw);
+		this.connect = this.getConnection();
 		// Statements allow to issue SQL queries to the database
 		this.statement = connect.createStatement();
 		// Result set get the result of the SQL query
@@ -147,8 +116,7 @@ public class MySQLAccess {
 	}
 
 	public int countMessages() throws SQLException {
-		connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
-				+ "user=" + this.chatusername + "&password=" + this.chatpw);
+		this.connect = this.getConnection();
 
 		// Statements allow to issue SQL queries to the database
 		statement = connect.createStatement();
@@ -161,8 +129,7 @@ public class MySQLAccess {
 	}
 
 	public int countUsers() throws SQLException {
-		connect = DriverManager.getConnection("jdbc:mysql://localhost/chatvs?"
-				+ "user=" + this.chatusername + "&password=" + this.chatpw);
+		this.connect = this.getConnection();
 
 		// Statements allow to issue SQL queries to the database
 		statement = connect.createStatement();
@@ -174,9 +141,7 @@ public class MySQLAccess {
 	}
 
 	public List<Message> getLatestMessages(int nr) throws SQLException {
-		this.connect = DriverManager
-				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
-						+ this.chatusername + "&password=" + this.chatpw);
+		this.connect = this.getConnection();
 
 		// Statements allow to issue SQL queries to the database
 		this.statement = this.connect.createStatement();
@@ -199,9 +164,7 @@ public class MySQLAccess {
 	}
 
 	public List<User> getCurrentUsers() throws SQLException {
-		this.connect = DriverManager
-				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
-						+ this.chatusername + "&password=" + this.chatpw);
+		this.connect = this.getConnection();
 
 		// Statements allow to issue SQL queries to the database
 		this.statement = this.connect.createStatement();
@@ -220,9 +183,7 @@ public class MySQLAccess {
 	}
 
 	public void removeUserfromDB(User user) throws SQLException {
-		this.connect = DriverManager
-				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
-						+ this.chatusername + "&password=" + this.chatpw);
+		this.connect = this.getConnection();
 		this.preparedStatement = connect
 				.prepareStatement("DELETE  from chatvs.users WHERE username= ? ; ");
 		this.preparedStatement.setString(1, user.getUsername());
@@ -232,9 +193,7 @@ public class MySQLAccess {
 	}
 
 	public void addUserToDB(User user) throws SQLException {
-		this.connect = DriverManager
-				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
-						+ this.chatusername + "&password=" + this.chatpw);
+		this.connect = this.getConnection();
 		// Statements allow to issue SQL queries to the database
 		this.statement = connect.createStatement();
 		// Result set get the result of the SQL query
@@ -246,13 +205,17 @@ public class MySQLAccess {
 		this.preparedStatement.executeUpdate();
 		closeQuietly();
 	}
-
-	public String getServer() {
-		return server;
+	
+	public ServerManager getServerManager() {
+		return this.serverManager;
 	}
-
-	public int getPort() {
-		return port;
+	
+	private Connection getConnection() throws SQLException {
+		final StringBuilder connection = new StringBuilder()
+			.append(this.serverManager.getActiveServerConnection())
+			.append("?user=").append(this.chatusername)
+			.append("&password=").append(this.chatpw);
+		return DriverManager.getConnection(connection.toString());
 	}
 
 }
