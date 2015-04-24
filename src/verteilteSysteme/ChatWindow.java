@@ -62,6 +62,14 @@ public class ChatWindow {
 		addMemberToList(this.user);
 		loadMemberList();
 	}
+	public ChatWindow(String server, String dbusername, String dbpassword, String username) throws Exception {
+		initialize();
+		this.frmChatsystemTinfb.setVisible(true);
+		this.dao = new MySQLAccess(server, dbusername, dbpassword);
+		this.user = new User(username);
+		addMemberToList(this.user);
+		loadMemberList();
+	}
 
 	public void addSingleMessage(Message message) {
 		try {
@@ -158,7 +166,7 @@ public class ChatWindow {
 	 */
 	private void initialize() {
 		frmChatsystemTinfb = new JFrame();
-		frmChatsystemTinfb.setTitle("ChatSystem TINF12B4");
+		frmChatsystemTinfb.setTitle("ChatSystem TINF12B4 username: "+ this.user.getUsername()+" server: " + this.dao.getServer());
 		frmChatsystemTinfb.setBounds(100, 100, 850, 600);
 		frmChatsystemTinfb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChatsystemTinfb.getContentPane().setLayout(null);

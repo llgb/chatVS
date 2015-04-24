@@ -225,4 +225,8 @@ public class MySQLAccess {
 		this.preparedStatement.executeUpdate();
 		closeQuietly();
 	}
+	public String getServer() {
+		return server;
+	}
+	
 }
