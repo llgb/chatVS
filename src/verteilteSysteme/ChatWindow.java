@@ -63,10 +63,10 @@ public class ChatWindow {
 		loadMemberList();
 	}
 	public ChatWindow(String server, String dbusername, String dbpassword, String username) throws Exception {
-		initialize();
-		this.frmChatsystemTinfb.setVisible(true);
 		this.dao = new MySQLAccess(server, dbusername, dbpassword);
 		this.user = new User(username);
+		initialize();
+		this.frmChatsystemTinfb.setVisible(true);	
 		addMemberToList(this.user);
 		loadMemberList();
 	}

@@ -21,6 +21,7 @@ public class MySQLAccess {
 	private final String chatusername;
 	private final String chatpw;
 	private final String server;
+	private int port=3306;
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(MySQLAccess.class);
@@ -38,15 +39,30 @@ public class MySQLAccess {
 			logger.info("DB Password: {}", chatpw);
 		}
 	}
-	public MySQLAccess(String server, String username, String password) throws Exception {
+	public MySQLAccess(String server, String username, String password)  {
 		super();
 		this.server = server;
 		this.chatusername = username;
 		this.chatpw = password;
 
 			logger.info("DB User: {}", chatusername);
-			logger.info("DB Password: {}", chatpw);		
+			logger.info("DB Password: {}", chatpw);	
+			logger.info("DB Server: {}", server);
+			logger.info("DB Port: {}", port);
 	}
+	public MySQLAccess(String server, int portnumber, String username, String password)  {
+		super();
+		this.server = server;
+		this.chatusername = username;
+		this.chatpw = password;
+		this.port = portnumber;
+		logger.info("DB User: {}", chatusername);
+		logger.info("DB Password: {}", chatpw);
+		logger.info("DB Server: {}", server);
+		logger.info("DB Port: {}", port);
+		
+	}
+	
 
 	public void readDataBase() throws SQLException {
 		this.connect = DriverManager
@@ -227,6 +243,9 @@ public class MySQLAccess {
 	}
 	public String getServer() {
 		return server;
+	}
+	public int getPort() {
+		return port;
 	}
 	
 }
