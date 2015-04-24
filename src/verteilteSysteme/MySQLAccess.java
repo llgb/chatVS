@@ -198,10 +198,9 @@ public class MySQLAccess {
 		this.statement = connect.createStatement();
 		// Result set get the result of the SQL query
 		this.preparedStatement = connect
-				.prepareStatement("insert into  chatvs.users values (default, ?, ?)");
+				.prepareStatement("insert into  chatvs.users values (default, ?)");
 		// Parameters start with 1
 		this.preparedStatement.setString(1, user.getUsername());
-		this.preparedStatement.setString(2, user.getPasswordhash());
 		this.preparedStatement.executeUpdate();
 		closeQuietly();
 	}
