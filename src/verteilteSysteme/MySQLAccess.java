@@ -20,6 +20,7 @@ public class MySQLAccess {
 	private ResultSet resultSet = null;
 	private final String chatusername;
 	private final String chatpw;
+	private final String server;
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(MySQLAccess.class);
@@ -28,6 +29,7 @@ public class MySQLAccess {
 		super();
 		this.chatusername = System.getenv("chatvs_user");
 		this.chatpw = System.getenv("chatvs_pw");
+		this.server = "localhost";
 
 		if (this.chatusername == null || this.chatpw == null) {
 			throw new Exception("Systemvariable nicht gesetzt!");
@@ -36,10 +38,19 @@ public class MySQLAccess {
 			logger.info("DB Password: {}", chatpw);
 		}
 	}
+	public MySQLAccess(String server, String username, String password) throws Exception {
+		super();
+		this.server = server;
+		this.chatusername = username;
+		this.chatpw = password;
+
+			logger.info("DB User: {}", chatusername);
+			logger.info("DB Password: {}", chatpw);		
+	}
 
 	public void readDataBase() throws SQLException {
 		this.connect = DriverManager
-				.getConnection("jdbc:mysql://localhost/chatvs?" + "user="
+				.getConnection("jdbc:mysql://"+this.server+"/chatvs?" + "user="
 						+ this.chatusername + "&password=" + this.chatpw);
 
 		// Statements allow to issue SQL queries to the database
