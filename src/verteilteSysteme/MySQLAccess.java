@@ -181,6 +181,32 @@ public class MySQLAccess {
 
 		return currentUsersList;
 	}
+	
+	public List<String> getServers() throws SQLException {
+		this.connect = this.getConnection();
+		this.statement = this.connect.createStatement();
+		this.resultSet = this.statement.executeQuery("select * from chatvs.servers");
+
+		final List<String> servers = new ArrayList<String>();
+
+		while (this.resultSet.next()) {
+			final String host = resultSet.getString(2);
+			int port    = resultSet.getInt(3);
+			// If column == NULL use the default MYSQL port.
+			if (port == 0) {
+				port = 3306;
+			}
+			final StringBuilder urlBuilder = new StringBuilder()
+				.append("jdbc:mysql://")
+				.append(host)
+				.append(":")
+				.append(port)
+				.append("/chatvs");
+			servers.add(urlBuilder.toString());
+		}
+
+		return servers;
+	}
 
 	public void removeUserfromDB(User user) throws SQLException {
 		this.connect = this.getConnection();

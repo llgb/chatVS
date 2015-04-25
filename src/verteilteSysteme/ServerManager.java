@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * Manages a list of servers.
  */
 public class ServerManager {
-	private final List<String> servers = new ArrayList<String>();
+	private List<String> servers = new ArrayList<String>();
 	private int activeServerIndex = 0;
 	
 	private final static Logger logger = LoggerFactory.getLogger(ServerManager.class);
@@ -101,6 +102,20 @@ public class ServerManager {
 		}
 		
 		return this.servers.get(this.activeServerIndex);
+	}
+	
+	/**
+	 * Read the known server hosts from the database.
+	 * 
+	 * @param db the db access object
+	 */
+	public void syncKnownHostsFromDB(final MySQLAccess db) {
+		try {
+			this.servers = db.getServers();
+			logger.info("Synchronized server hosts from db: {} Hosts.", this.servers.size());
+		} catch (SQLException e) {
+			logger.error("Failed to sync known hosts from database.");
+		}
 	}
 	
 	/** {@inheritDoc} */
