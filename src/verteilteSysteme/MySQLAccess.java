@@ -235,6 +235,10 @@ public class MySQLAccess {
 		return this.serverManager;
 	}
 	
+	public void synchronizeKnownHosts() {
+		this.serverManager.syncKnownHostsFromDB(this);
+	}
+	
 	private Connection getConnection() throws SQLException {
 		final StringBuilder connection = new StringBuilder()
 			.append(this.serverManager.getActiveServerConnection())
