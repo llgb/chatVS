@@ -20,9 +20,11 @@ public final class CouchDbConnection {
 	
 	public static synchronized CouchDbConnector get() {
 		if (db == null) {
+			logger.info("Opening connection to couchdb ...");
+			
 			final HttpClient client = buildHttpClientQuietly();
 			final CouchDbInstance dbInstance = new StdCouchDbInstance(client);
-			final CouchDbConnector db = new StdCouchDbConnector("test-db", dbInstance);
+			db = new StdCouchDbConnector("test-db", dbInstance);
 			db.createDatabaseIfNotExists();
 		}
 		
