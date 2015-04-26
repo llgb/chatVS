@@ -16,25 +16,33 @@ public final class CouchDbConnection {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CouchDbConnection.class);
 	
+	public static String url           = "http://127.0.0.1:5984/";
+	public static String dbName        = "chatvs";
+	
 	private CouchDbConnection() {}
 	
 	public static synchronized CouchDbConnector get() {
-		if (db == null) {
+		if (CouchDbConnection.db == null) {
 			logger.info("Opening connection to couchdb ...");
 			
-			final HttpClient client = buildHttpClientQuietly();
+			final HttpClient client          = buildHttpClientQuietly();
 			final CouchDbInstance dbInstance = new StdCouchDbInstance(client);
-			db = new StdCouchDbConnector("test-db", dbInstance);
-			db.createDatabaseIfNotExists();
+			CouchDbConnection.db             = new StdCouchDbConnector(CouchDbConnection.dbName, dbInstance);
+			CouchDbConnection.db.createDatabaseIfNotExists();
 		}
 		
-		return db;
+		return CouchDbConnection.db;
+	}
+	
+	public static synchronized void setConnectionDetails(final String url, final String dbName) {
+		CouchDbConnection.url    = url;
+		CouchDbConnection.dbName = dbName;
 	}
 	
 	private static HttpClient buildHttpClientQuietly() {
 		try {
 			return new StdHttpClient.Builder()
-						.url("http://127.0.0.1:5984/")
+						.url(url)
 						.build();
 		} catch (MalformedURLException e) {
 			logger.error("Unexpected MalformedURLException.");
