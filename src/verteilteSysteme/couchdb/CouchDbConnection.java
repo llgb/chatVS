@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 public final class CouchDbConnection {
 	private static CouchDbConnector db = null;
 	
+	private static String username     = System.getenv("chatvs_user");
+	private static String password     = System.getenv("chatvs_pw");
+	
 	private static final Logger logger = LoggerFactory.getLogger(CouchDbConnection.class);
 	
 	public static String url           = "http://127.0.0.1:5984/";
@@ -40,9 +43,16 @@ public final class CouchDbConnection {
 	}
 	
 	private static HttpClient buildHttpClientQuietly() {
+		if (CouchDbConnection.username == null || CouchDbConnection.password == null) {
+			logger.error("No username and/or password known. Set the environment variables!");
+			return null;
+		}
+		
 		try {
 			return new StdHttpClient.Builder()
 						.url(url)
+						.username(CouchDbConnection.username)
+						.password(CouchDbConnection.password)
 						.build();
 		} catch (MalformedURLException e) {
 			logger.error("Unexpected MalformedURLException.");
