@@ -104,20 +104,6 @@ public class ServerManager {
 		return this.servers.get(this.activeServerIndex);
 	}
 	
-	/**
-	 * Read the known server hosts from the database.
-	 * 
-	 * @param db the db access object
-	 */
-	public void syncKnownHostsFromDB(final MySQLAccess db) {
-		try {
-			this.servers = db.getServers();
-			logger.info("Synchronized server hosts from db: {} Hosts.", this.servers.size());
-		} catch (SQLException e) {
-			logger.error("Failed to sync known hosts from database.");
-		}
-	}
-	
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {

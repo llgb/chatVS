@@ -9,8 +9,6 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -29,8 +27,15 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import verteilteSysteme.couchdb.CouchDbConnection;
+import verteilteSysteme.couchdb.Message;
+import verteilteSysteme.couchdb.MessageRepository;
+import verteilteSysteme.couchdb.User;
+import verteilteSysteme.couchdb.UserRepository;
 
 public class ChatWindow {
 
@@ -42,7 +47,6 @@ public class ChatWindow {
 	private DefaultListModel listModelMembers;
 	private ChatWindow window;
 	private List<Message> messagelist;
-	private final MySQLAccess dao;
 	private User user;
 	private JScrollPane messagesScrollPane;
 
@@ -54,8 +58,7 @@ public class ChatWindow {
 	 * 
 	 * @throws Exception
 	 */
-	public ChatWindow(String username, MySQLAccess dao) throws Exception {
-		this.dao = dao;
+	public ChatWindow(String username) throws Exception {
 		this.user = new User(username);
 		initialize();
 		this.frmChatsystemTinfb.setVisible(true);
@@ -69,7 +72,7 @@ public class ChatWindow {
 			StyleContext sc = StyleContext.getDefaultStyleContext();
 			AttributeSet aset;
 			JScrollBar vertical;
-			if (message.getOwner().getUsername().equals(this.user.getUsername())) {
+			if (message.getOwner().equals(this.user.getName())) {
 				aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, new Color(255,0,0));
 			}
 			else{
@@ -101,56 +104,36 @@ public class ChatWindow {
 	}
 
 	public void sendMessage(String messageString) {
-		try {
-			this.dao.writeToDataBase(new Message(user, messageString));
-			tfEingabe.setText("");
-			tfEingabe.requestFocusInWindow();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		final MessageRepository messageRepository = new MessageRepository(CouchDbConnection.get());
+		messageRepository.add(new Message(this.user.getName(), messageString, new DateTime()));
+		tfEingabe.setText("");
+		tfEingabe.requestFocusInWindow();
 	}
 
 	public void loadMemberList() {
-		try {
-			List<User> dbCurrentUsers = new ArrayList<User>();
-			dbCurrentUsers = this.dao.getCurrentUsers();
-			for (User user : dbCurrentUsers) {
-				this.listModelMembers.addElement(user.getUsername());
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		final UserRepository userRepository = new UserRepository(CouchDbConnection.get());
+		final List<User> dbCurrentUsers = userRepository.getAll();
+		for (User user : dbCurrentUsers) {
+			this.listModelMembers.addElement(user.getName());
 		}
 	}
 
 	public void addMemberToList(User user) {
-		try {
-			this.dao.addUserToDB(user);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		final UserRepository userRepository = new UserRepository(CouchDbConnection.get());
+		userRepository.add(user);
 	}
 
 	public void addMemberListToList(List<User> newUsers) {
 		this.listModelMembers.clear();
 		for (User user : newUsers) {
-			this.listModelMembers.addElement(user.getUsername());
+			this.listModelMembers.addElement(user.getName());
 		}
 
 	}
 
 	public void removeMemberFromList(User user) {
-		try {
-			this.dao.removeUserfromDB(user);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		final UserRepository userRepository = new UserRepository(CouchDbConnection.get());
+		userRepository.remove(user);
 	}
 
 	/**
@@ -158,7 +141,8 @@ public class ChatWindow {
 	 */
 	private void initialize() {
 		frmChatsystemTinfb = new JFrame();
-		frmChatsystemTinfb.setTitle("ChatSystem TINF12B4 username: "+ this.user.getUsername()+" server: " + this.dao.getServerManager().getActiveServerConnection());
+		// TODO: fetch active server
+		frmChatsystemTinfb.setTitle("ChatSystem TINF12B4 username: "+ this.user.getName()+" server: " + "TODO: fetch active server");
 		frmChatsystemTinfb.setBounds(100, 100, 850, 600);
 		frmChatsystemTinfb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChatsystemTinfb.getContentPane().setLayout(null);

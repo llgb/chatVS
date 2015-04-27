@@ -7,4 +7,8 @@ public class UserRepository extends CouchDbRepositorySupport<User>{
 	public UserRepository(final CouchDbConnector connector) {
 		super(User.class, connector);
 	}
+	
+	public int getNrOfUsers() {
+		return this.getAll().size();
+	}
 }

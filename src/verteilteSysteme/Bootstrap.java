@@ -11,12 +11,10 @@ public class Bootstrap {
 		serverManager.addServer("jdbc:mysql://localhost/chatvs");
 		
 		try {
-			final MySQLAccess dao = new MySQLAccess(serverManager);
-			
-			final ChatWindow window = new ChatWindow("klaus1", dao);
+			final ChatWindow window = new ChatWindow("klaus1");
 			logger.info("Window created.");
 			
-			final Thread pollthread = new Thread(new PollThread(window, dao));
+			final Thread pollthread = new Thread(new PollThread(window));
 			pollthread.start();
 			logger.info("Started listening for new messages.");
 		} catch (Exception e) {
