@@ -5,29 +5,30 @@ import java.util.List;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
-import org.ektorp.support.GenerateView;
 
+/**
+ * Provides CRUD methods and more for message objects.
+ */
 public class MessageRepository extends CouchDbRepositorySupport<Message> {
 	public MessageRepository(final CouchDbConnector connector) {
 		super(Message.class, connector);
 	}
 	
-//	@GenerateView
-//	public List<Message> findByTag(String tag) {
-//		return queryView("by_tag", tag);
-//	}
-//	
-//	@Override
-//	public List<Message> getAll() {
-//		return this.findByTag("message_tag");
-//	}
-	
-	// TODO: use a query instead of fetching all docs
+	/**
+	 * Get the number of messages that exist.
+	 * 
+	 * @return the number of messages
+	 */
 	public int getNrOfMessages() {
 		return this.getAll().size();
 	}
 	
-	// TODO: use a query instead of fetching all docs
+	/**
+	 * Get the most recent messages.
+	 * 
+	 * @param n the number of most recent messages to get
+	 * @return the most recent messages
+	 */
 	public List<Message> getRecentMessages(final int n) {
 		int total = this.getNrOfMessages();
 		List<Message> messages = new ArrayList<Message>(n);

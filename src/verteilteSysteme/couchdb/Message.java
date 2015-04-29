@@ -4,6 +4,9 @@ import org.ektorp.support.CouchDbDocument;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 
+/**
+ * Represents a chat message.
+ */
 @TypeDiscriminator("doc.owner && doc.content && doc.created")
 public class Message extends CouchDbDocument {
 	private static final long serialVersionUID = -3904251765374033818L;
