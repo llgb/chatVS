@@ -142,8 +142,7 @@ public class ChatWindow {
 	 */
 	private void initialize() {
 		frmChatsystemTinfb = new JFrame();
-		// TODO: fetch active server
-		frmChatsystemTinfb.setTitle("ChatSystem TINF12B4 username: "+ this.user.getName()+" server: " + "TODO: fetch active server");
+		frmChatsystemTinfb.setTitle("ChatSystem TINF12B4 username: "+ this.user.getName() + " Server: " + MessageCouchDbConnection.getHost());
 		frmChatsystemTinfb.setBounds(100, 100, 850, 600);
 		frmChatsystemTinfb.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChatsystemTinfb.getContentPane().setLayout(null);

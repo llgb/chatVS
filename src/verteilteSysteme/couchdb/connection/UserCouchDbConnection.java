@@ -22,8 +22,8 @@ public final class UserCouchDbConnection {
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserCouchDbConnection.class);
 	
-	public static String url           = "http://127.0.0.1:5984/";	// default
-	public static String dbName        = "chatvs";
+	private static String url           = "http://127.0.0.1:5984/";	// default
+	private static String dbName        = "chatvs";
 	
 	public static synchronized CouchDbConnector get() {
 		if (UserCouchDbConnection.db == null) {
@@ -41,6 +41,10 @@ public final class UserCouchDbConnection {
 	public static synchronized void setConnectionDetails(final String url, final String dbName) {
 		UserCouchDbConnection.url    = url;
 		UserCouchDbConnection.dbName = dbName;
+	}
+	
+	public static String getHost() {
+		return UserCouchDbConnection.url;
 	}
 	
 	protected static HttpClient buildHttpClientQuietly() {

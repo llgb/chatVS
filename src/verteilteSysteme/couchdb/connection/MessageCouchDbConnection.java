@@ -43,6 +43,10 @@ public final class MessageCouchDbConnection {
 		MessageCouchDbConnection.dbName = dbName;
 	}
 	
+	public static String getHost() {
+		return MessageCouchDbConnection.url;
+	}
+	
 	protected static HttpClient buildHttpClientQuietly() {
 		if (MessageCouchDbConnection.username == null || MessageCouchDbConnection.password == null) {
 			logger.error("No username and/or password known. Set the environment variables!");
