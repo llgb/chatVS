@@ -24,7 +24,7 @@ public class PollThread implements Runnable {
 	
 	private static final Logger logger = LoggerFactory.getLogger(PollThread.class);
 	
-	public PollThread(final ChatWindow window) throws Exception {
+	public PollThread(final ChatWindow window) {
 		super();
 		this.window = window;
 	}
