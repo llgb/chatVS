@@ -1,5 +1,7 @@
 package verteilteSysteme;
 
+import javax.swing.UIManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,10 @@ public class Bootstrap {
 		
 		// Create the GUI window and start listening for messages.
 		try {
+			final String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+			logger.info("System look and feel: {} Trying to set it.", lookAndFeel);
+			UIManager.setLookAndFeel(lookAndFeel);
+			
 			final ChatWindow window = new ChatWindow(username);
 			logger.info("Window created.");
 			
