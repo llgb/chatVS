@@ -6,11 +6,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import verteilteSysteme.couchdb.CouchDbConnection;
 import verteilteSysteme.couchdb.Message;
 import verteilteSysteme.couchdb.MessageRepository;
 import verteilteSysteme.couchdb.User;
 import verteilteSysteme.couchdb.UserRepository;
+import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
+import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
 
 public class PollThread implements Runnable {
 	private int numberOfCachedMessages                = 0;
@@ -18,8 +19,8 @@ public class PollThread implements Runnable {
 	private List<Message> newMessages                 = new ArrayList<Message>();
 	private List<User> newUsers                       = new ArrayList<User>();
 	private final ChatWindow window;
-	private final MessageRepository messageRepository = new MessageRepository(CouchDbConnection.get());
-	private final UserRepository userRepository       = new UserRepository(CouchDbConnection.get());
+	private final MessageRepository messageRepository = new MessageRepository(MessageCouchDbConnection.get());
+	private final UserRepository userRepository       = new UserRepository(UserCouchDbConnection.get());
 	
 	private static final Logger logger = LoggerFactory.getLogger(PollThread.class);
 	

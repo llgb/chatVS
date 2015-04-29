@@ -31,11 +31,12 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import verteilteSysteme.couchdb.CouchDbConnection;
 import verteilteSysteme.couchdb.Message;
 import verteilteSysteme.couchdb.MessageRepository;
 import verteilteSysteme.couchdb.User;
 import verteilteSysteme.couchdb.UserRepository;
+import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
+import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
 
 public class ChatWindow {
 
@@ -104,14 +105,14 @@ public class ChatWindow {
 	}
 
 	public void sendMessage(String messageString) {
-		final MessageRepository messageRepository = new MessageRepository(CouchDbConnection.get());
+		final MessageRepository messageRepository = new MessageRepository(MessageCouchDbConnection.get());
 		messageRepository.add(new Message(this.user.getName(), messageString, new DateTime()));
 		tfEingabe.setText("");
 		tfEingabe.requestFocusInWindow();
 	}
 
 	public void loadMemberList() {
-		final UserRepository userRepository = new UserRepository(CouchDbConnection.get());
+		final UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
 		final List<User> dbCurrentUsers = userRepository.getAll();
 		for (User user : dbCurrentUsers) {
 			this.listModelMembers.addElement(user.getName());
@@ -119,7 +120,7 @@ public class ChatWindow {
 	}
 
 	public void addMemberToList(User user) {
-		final UserRepository userRepository = new UserRepository(CouchDbConnection.get());
+		final UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
 		userRepository.add(user);
 	}
 
@@ -132,7 +133,7 @@ public class ChatWindow {
 	}
 
 	public void removeMemberFromList(User user) {
-		final UserRepository userRepository = new UserRepository(CouchDbConnection.get());
+		final UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
 		userRepository.remove(user);
 	}
 

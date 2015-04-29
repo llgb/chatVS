@@ -5,11 +5,22 @@ import java.util.List;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
+import org.ektorp.support.GenerateView;
 
 public class MessageRepository extends CouchDbRepositorySupport<Message> {
 	public MessageRepository(final CouchDbConnector connector) {
 		super(Message.class, connector);
 	}
+	
+//	@GenerateView
+//	public List<Message> findByTag(String tag) {
+//		return queryView("by_tag", tag);
+//	}
+//	
+//	@Override
+//	public List<Message> getAll() {
+//		return this.findByTag("message_tag");
+//	}
 	
 	// TODO: use a query instead of fetching all docs
 	public int getNrOfMessages() {

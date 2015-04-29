@@ -1,10 +1,12 @@
 package verteilteSysteme.couchdb;
 
 import org.ektorp.support.CouchDbDocument;
+import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 
+@TypeDiscriminator("doc.owner && doc.content && doc.created")
 public class Message extends CouchDbDocument {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3904251765374033818L;
 
 	private String owner;
 	
@@ -45,6 +47,17 @@ public class Message extends CouchDbDocument {
 	
 	public void setCreated(final DateTime created) {
 		this.created = created;
+	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+					.append(this.created.toString())
+					.append(" ")
+					.append(this.owner)
+					.append(" ")
+					.append(this.content)
+					.toString();
 	}
 }
 
