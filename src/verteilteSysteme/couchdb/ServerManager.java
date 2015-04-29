@@ -1,9 +1,12 @@
 package verteilteSysteme.couchdb;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +17,9 @@ import org.slf4j.LoggerFactory;
  * Manages a list of servers.
  */
 public class ServerManager {
-	private List<String> servers = new ArrayList<String>();
+	private List<String> servers  = new ArrayList<String>();
 	private int activeServerIndex = 0;
+	private String configFilename;
 	
 	private final static Logger logger = LoggerFactory.getLogger(ServerManager.class);
 
@@ -24,13 +28,15 @@ public class ServerManager {
 	 * default server.
 	 * 
 	 * Format:
-	 * jdbc:mysql://host[:port]/chatvs
+	 * jdbc:mysql://host[:port]/
 	 */
 	public ServerManager(final String configFilename) {
-		final File file = new File(configFilename);
+		this.configFilename = configFilename;
+		final File file = new File(this.configFilename);
 		
 		if (!file.exists()) {
-			logger.warn("Server config file {} doesn't exist.", configFilename);
+			logger.info("Server config file {} doesn't exist. Will try using localhost as server host.", this.configFilename);
+			this.servers.add("http://127.0.0.1:5984/");
 			return;
 		}
 		
@@ -45,12 +51,9 @@ public class ServerManager {
 				}
 			}
 		} catch (IOException e) {
-			logger.warn("Proccessing the config file {} failed.", configFilename);
+			logger.warn("Proccessing the config file {} failed.", this.configFilename);
 		}
 	}
-	
-	/** Constructor. */
-	public ServerManager() {}
 	
 	/**
 	 * Get the active server connection.
@@ -103,6 +106,43 @@ public class ServerManager {
 		return this.servers.get(this.activeServerIndex);
 	}
 	
+	/**
+	 * Writes all known server hosts to a text file.
+	 */
+	public void writeServerListToDisk() {
+		final File file = new File(this.configFilename);
+		
+		// Empty the file if it already exists.
+		if (file.exists()) {
+			file.delete();
+		}
+		
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(file));
+			
+			int loopCounter        = 0;
+			int serverIndexCounter = this.activeServerIndex;
+			while (loopCounter < this.getNrOfServers()) {
+				writer.append(this.servers.get(serverIndexCounter));
+				
+				if (serverIndexCounter < this.getNrOfServers() - 1) {
+					serverIndexCounter++;
+				} else {
+					serverIndexCounter = 0;
+				}
+				
+				loopCounter++;
+			}
+			
+			logger.info("Successfully write {} server hosts to {}.", this.getNrOfServers(), this.configFilename);
+		} catch (IOException e) {
+			logger.warn("Writing to {} failed.", file.getName());
+		} finally {
+			closeWriterQuietly(writer);
+		}
+	}
+	
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
@@ -113,5 +153,13 @@ public class ServerManager {
 		}
 		
 		return builder.toString();
+	}
+	
+	private static void closeWriterQuietly(final Writer writer) {
+		try {
+			writer.close();
+		} catch (IOException e) {
+			logger.error("Could not close BufferedWriter correctly.");
+		}
 	}
 }
