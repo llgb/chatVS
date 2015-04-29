@@ -19,7 +19,7 @@ public class Bootstrap {
 	private static void checkUser(){
 		UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
 		// User configuration.
-				String username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
+				username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
 				
 				if (username == null) {
 					//handle the Cancel Button
@@ -64,4 +64,8 @@ public class Bootstrap {
 		}
 		
 	}
+	public static void setUsername(String username) {
+		Bootstrap.username = username;
+	}
+	
 }
