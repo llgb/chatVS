@@ -33,8 +33,7 @@ public class User extends CouchDbDocument {
 		return this.name;
 	}
 	
-	@Override
-	public int hashCode() {
-		return this.name.hashCode();
+	public boolean equals(final User user) {
+		return this.name.equals(user.getName());
 	}
 }
