@@ -13,55 +13,67 @@ import verteilteSysteme.couchdb.UserRepository;
 import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
 import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
 
+/**
+ * A thread implementation that polls for new messages in a database and updates
+ * the chat window on demand.
+ */
 public class PollThread implements Runnable {
-	private int numberOfCachedMessages                = 0;
-	private int numberOfCachedUsers                   = 0;
-	private List<Message> newMessages                 = new ArrayList<Message>();
-	private List<User> newUsers                       = new ArrayList<User>();
 	private final ChatWindow window;
-	private final MessageRepository messageRepository = new MessageRepository(MessageCouchDbConnection.get());
-	private final UserRepository userRepository       = new UserRepository(UserCouchDbConnection.get());
 	
 	private static final Logger logger = LoggerFactory.getLogger(PollThread.class);
 	
+	/**
+	 * Initiates the thread.
+	 * 
+	 * @param window the corresponding chat window to be updated with new messages
+	 */
 	public PollThread(final ChatWindow window) {
 		super();
 		this.window = window;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void run() {
+		int numberOfCachedMessages                = 0;
+		int numberOfCachedUsers                   = 0;
+		List<Message> newMessages                 = new ArrayList<Message>();
+		List<User> newUsers                       = new ArrayList<User>();
+		final MessageRepository messageRepository = new MessageRepository(MessageCouchDbConnection.get());
+		final UserRepository userRepository       = new UserRepository(UserCouchDbConnection.get());
+		
         try {
         	while (true) {
-        		int currentInDBMessages = this.messageRepository.getNrOfMessages();                		
-	    		int messageDifference = currentInDBMessages - this.numberOfCachedMessages;
+        		int currentInDBMessages = messageRepository.getNrOfMessages();                		
+	    		int messageDifference = currentInDBMessages - numberOfCachedMessages;
 	    		logger.info("Nachrichtenanzahl beträgt: {}", currentInDBMessages);
 	    		logger.info("Nachrichtendifferenz beträgt: {}", messageDifference);
 	    		
 	    		if (messageDifference > 0 ) {
-	    			this.newMessages = this.messageRepository.getRecentMessages(messageDifference);
-	    			this.numberOfCachedMessages = currentInDBMessages;
+	    			newMessages            = messageRepository.getRecentMessages(messageDifference);
+	    			numberOfCachedMessages = currentInDBMessages;
 	    			this.window.addMessageList(newMessages);
-	    			this.newMessages.clear();
+	    			newMessages.clear();
 	    		}
 	    		
 	    		//Check for new Users
-	    		int currentInDBUsers = this.userRepository.getNrOfUsers();	                		
-	    		int userDifference = currentInDBUsers - this.numberOfCachedUsers;
+	    		int currentInDBUsers = userRepository.getNrOfUsers();	                		
+	    		int userDifference   = currentInDBUsers - numberOfCachedUsers;
 	    		logger.info("Useranzahl beträgt: {}", currentInDBUsers);
 	    		logger.info("userdifferenz beträgt: {}", userDifference);
 	    		
 	    		if (userDifference != 0 ) {
-	    			this.newUsers = this.userRepository.getAll();
-	    			this.numberOfCachedUsers = currentInDBUsers;
+	    			newUsers            = userRepository.getAll();
+	    			numberOfCachedUsers = currentInDBUsers;
 	    			this.window.addMemberListToList(newUsers);
-	    			this.newMessages.clear();
+	    			newMessages.clear();
 	    		}
 	    		
 	    		logger.info("Thread going to sleep ...");
 	    		Thread.sleep(500);	
         	}
 		} catch (InterruptedException e) {
+			logger.error("Thread interrupted.");
 			e.printStackTrace();
 		}
     }
