@@ -6,6 +6,8 @@ import javax.swing.UIManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import verteilteSysteme.couchdb.User;
+import verteilteSysteme.couchdb.UserRepository;
 import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
 import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
 
@@ -17,9 +19,16 @@ public class Bootstrap {
 		final String host = "http://127.0.0.1:5984/";
 		MessageCouchDbConnection.setConnectionDetails(host, "chatvs_messages");
 		UserCouchDbConnection.setConnectionDetails(host, "chatvs_users");
+		UserRepository messageRepository = new UserRepository(UserCouchDbConnection.get());
+		
 		
 		// User configuration.
-		final String username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
+		String username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
+		boolean exists = messageRepository.exists(new User(username));
+		while (exists) {
+			JOptionPane.showMessageDialog(null, "Der gewünschte Nickname "+username + " wird leider bereits verwendet");
+			username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
+		}
 		
 		// Create the GUI window and start listening for messages.
 		try {
