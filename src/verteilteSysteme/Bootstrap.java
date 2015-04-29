@@ -3,6 +3,7 @@ package verteilteSysteme;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,22 +14,22 @@ import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
 
 public class Bootstrap {
 	private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
-	
+
 	public static void main(String[] args) {
 		// Configure the database connection.
 		final String host = "http://127.0.0.1:5984/";
 		MessageCouchDbConnection.setConnectionDetails(host, "chatvs_messages");
 		UserCouchDbConnection.setConnectionDetails(host, "chatvs_users");
-		UserRepository messageRepository = new UserRepository(UserCouchDbConnection.get());
+		UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
 		
 		
 		// User configuration.
 		String username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
-		boolean exists = messageRepository.exists(new User(username));
+		boolean exists = userRepository.exists(new User(username));
 		while (exists) {
 			JOptionPane.showMessageDialog(null, "Der gewünschte Nickname "+username + " wird leider bereits verwendet");
 			username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
-			exists = messageRepository.exists(new User(username));
+			exists = userRepository.exists(new User(username));
 		}		
 		
 		// Create the GUI window and start listening for messages.
@@ -48,5 +49,4 @@ public class Bootstrap {
 		}
 		
 	}
-
 }
