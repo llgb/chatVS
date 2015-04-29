@@ -90,11 +90,11 @@ public class ChatWindow {
 	/**
 	 * Add multiple messages to the main pane.
 	 * 
-	 * @param messageList the messages to add
+	 * @param messages the messages to add
 	 */
-	public void addMessageList(List<Message> messageList) {
-		for (int i = messageList.size() - 1; i >= 0; i--) {
-			addSingleMessage(messageList.get(i));
+	public void addMessageList(List<Message> messages) {
+		for (Message message : messages) {
+			addSingleMessage(message);
 		}
 	}
 
@@ -248,7 +248,5 @@ public class ChatWindow {
 				tfEingabe.requestFocus();
 			}
 		});
-
 	}
-
 }
