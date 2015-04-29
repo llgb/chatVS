@@ -24,6 +24,7 @@ public class Bootstrap {
 		
 		
 		// User configuration.
+		// User configuration.
 		String username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
 		boolean exists = userRepository.exists(new User(username));
 		while (exists) {
