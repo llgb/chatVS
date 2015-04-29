@@ -6,6 +6,7 @@ import javax.swing.UIManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import verteilteSysteme.couchdb.ServerManager;
 import verteilteSysteme.couchdb.User;
 import verteilteSysteme.couchdb.UserRepository;
 import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
@@ -16,9 +17,9 @@ public class Bootstrap {
 	
 	public static void main(String[] args) {
 		// Configure the database connection.
-		final String host = "http://127.0.0.1:5984/";
-		MessageCouchDbConnection.setConnectionDetails(host, "chatvs_messages");
-		UserCouchDbConnection.setConnectionDetails(host, "chatvs_users");
+		final ServerManager serverManager = new ServerManager("serverhosts.conf");
+		MessageCouchDbConnection.setConnectionDetails(serverManager.getActiveHost(), "chatvs_messages");
+		UserCouchDbConnection.setConnectionDetails(serverManager.getActiveHost(), "chatvs_users");
 		
 		final String username = getUsernameAndCheckIfReserved();
 		if (username == null) {
@@ -32,7 +33,7 @@ public class Bootstrap {
 			logger.info("System look and feel: {} Trying to set it.", lookAndFeel);
 			UIManager.setLookAndFeel(lookAndFeel);
 			
-			final ChatWindow window = new ChatWindow(username);
+			final ChatWindow window = new ChatWindow(username, serverManager);
 			logger.info("Window created.");
 			
 			final Thread pollthread = new Thread(new PollThread(window));

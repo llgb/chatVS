@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import verteilteSysteme.couchdb.Message;
 import verteilteSysteme.couchdb.MessageRepository;
+import verteilteSysteme.couchdb.ServerManager;
 import verteilteSysteme.couchdb.User;
 import verteilteSysteme.couchdb.UserRepository;
 import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
@@ -46,6 +47,7 @@ public class ChatWindow {
 	private DefaultListModel listModelMembers;
 	private User user;
 	private JScrollPane messagesScrollPane;
+	private final ServerManager serverManager;
 
 	private static final Logger logger = LoggerFactory.getLogger(ChatWindow.class);
 
@@ -54,8 +56,9 @@ public class ChatWindow {
 	 * 
 	 * @throws Exception something crashed
 	 */
-	public ChatWindow(final String username) throws Exception {
+	public ChatWindow(final String username, final ServerManager serverManager) throws Exception {
 		logger.info("Creating and initializing the main window for user {}", username);
+		this.serverManager = serverManager;
 		this.user = new User(username);
 		initialize();
 		this.frmChatsystemTinfb.setVisible(true);
@@ -195,6 +198,7 @@ public class ChatWindow {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				removeMemberFromList(user);
+				serverManager.writeHostListToDisk();
 			}
 
 			@Override

@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
  * Manages a list of servers.
  */
 public class ServerManager {
-	private List<String> servers  = new ArrayList<String>();
-	private int activeServerIndex = 0;
+	private List<String> hosts  = new ArrayList<String>();
+	private int activeHostIndex = 0;
 	private String configFilename;
 	
 	private final static Logger logger = LoggerFactory.getLogger(ServerManager.class);
@@ -36,7 +36,7 @@ public class ServerManager {
 		
 		if (!file.exists()) {
 			logger.info("Server config file {} doesn't exist. Will try using localhost as server host.", this.configFilename);
-			this.servers.add("http://127.0.0.1:5984/");
+			this.hosts.add("http://127.0.0.1:5984/");
 			return;
 		}
 		
@@ -47,69 +47,72 @@ public class ServerManager {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				if (!line.isEmpty()) {
-					this.servers.add(line);
+					this.hosts.add(line);
 				}
 			}
+			
+			logger.info("Successfully loaded {} hostnames from {}.", this.getNrOfHosts(), this.configFilename);
+			logger.info("Active host is now {}", this.getActiveHost());
 		} catch (IOException e) {
 			logger.warn("Proccessing the config file {} failed.", this.configFilename);
 		}
 	}
 	
 	/**
-	 * Get the active server connection.
+	 * Get the active host connection.
 	 * 
-	 * @return the active server connection
+	 * @return the active host connection
 	 */
-	public String getActiveServerConnection() {
-		return this.servers.size() > this.activeServerIndex ? this.servers.get(this.activeServerIndex) : null;
+	public String getActiveHost() {
+		return this.hosts.size() > this.activeHostIndex ? this.hosts.get(this.activeHostIndex) : null;
 	}
 	
 	/**
-	 * Add a new server.
+	 * Add a new host.
 	 * 
-	 * @param server the server connection
+	 * @param host the host
 	 */
-	public void addServer(final String server) {
-		this.servers.add(server);
+	public void addHost(final String host) {
+		this.hosts.add(host);
 	}
 	
 	/**
-	 * Get the number of known servers.
+	 * Get the number of known hosts.
 	 * 
-	 * @return the number of known servers
+	 * @return the number of known hosts
 	 */
-	public int getNrOfServers() {
-		return this.servers.size();
+	public int getNrOfHosts() {
+		return this.hosts.size();
 	}
 	
 	/**
-	 * Get all server connections.
+	 * Get all hosts.
 	 * 
-	 * @return the server connections
+	 * @return the hosts
 	 */
 	public List<String> getAll() {
-		return this.servers;
+		return this.hosts;
 	}
 	
 	/**
-	 * Increments the active server index number.
+	 * Increments the active host index number.
 	 * 
-	 * @return the new active server connection
+	 * @return the new active host
 	 */
-	public String changeActiveServer() {
-		if (this.activeServerIndex < this.servers.size() - 1) {
-			this.activeServerIndex++;
+	public String changeActiveHost() {
+		if (this.activeHostIndex < this.hosts.size() - 1) {
+			this.activeHostIndex++;
 		} else {
-			this.activeServerIndex = 0;
+			this.activeHostIndex = 0;
 		}
 		
-		return this.servers.get(this.activeServerIndex);
+		return this.hosts.get(this.activeHostIndex);
 	}
 	
 	/**
-	 * Writes all known server hosts to a text file.
+	 * Writes all known hosts to a text file.
 	 */
-	public void writeServerListToDisk() {
+	public void writeHostListToDisk() {
 		final File file = new File(this.configFilename);
 		
 		// Empty the file if it already exists.
@@ -122,11 +125,11 @@ public class ServerManager {
 			writer = new BufferedWriter(new FileWriter(file));
 			
 			int loopCounter        = 0;
-			int serverIndexCounter = this.activeServerIndex;
-			while (loopCounter < this.getNrOfServers()) {
-				writer.append(this.servers.get(serverIndexCounter));
+			int serverIndexCounter = this.activeHostIndex;
+			while (loopCounter < this.getNrOfHosts()) {
+				writer.append(this.hosts.get(serverIndexCounter));
 				
-				if (serverIndexCounter < this.getNrOfServers() - 1) {
+				if (serverIndexCounter < this.getNrOfHosts() - 1) {
 					serverIndexCounter++;
 				} else {
 					serverIndexCounter = 0;
@@ -135,7 +138,7 @@ public class ServerManager {
 				loopCounter++;
 			}
 			
-			logger.info("Successfully write {} server hosts to {}.", this.getNrOfServers(), this.configFilename);
+			logger.info("Successfully write {} server hosts to {}.", this.getNrOfHosts(), this.configFilename);
 		} catch (IOException e) {
 			logger.warn("Writing to {} failed.", file.getName());
 		} finally {
@@ -148,7 +151,7 @@ public class ServerManager {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		
-		for (String server : this.servers) {
+		for (String server : this.hosts) {
 			builder.append(server);
 		}
 		
