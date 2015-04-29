@@ -1,5 +1,6 @@
 package verteilteSysteme;
 
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ public class Bootstrap {
 		UserCouchDbConnection.setConnectionDetails(host, "chatvs_users");
 		
 		// User configuration.
-		final String username = "klaus";
+		final String username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
 		
 		// Create the GUI window and start listening for messages.
 		try {
