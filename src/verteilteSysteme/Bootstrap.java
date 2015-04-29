@@ -2,6 +2,7 @@ package verteilteSysteme;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,8 @@ public class Bootstrap {
 			final Thread pollthread = new Thread(new PollThread(window));
 			pollthread.start();
 			logger.info("Started listening for new messages.");
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+			logger.warn("Unable to set the look and feel of the user interface elements.");
 		}
 		
 	}
