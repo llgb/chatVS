@@ -18,10 +18,15 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginPrompt {
+import verteilteSysteme.couchdb.User;
+import verteilteSysteme.couchdb.UserRepository;
+import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
+
+public class LoginPrompt extends JFrame {
 	private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 	
 	private JFrame frmLoginWindow;
@@ -30,6 +35,7 @@ public class LoginPrompt {
 	private JLabel lblStatusText;
 	private JLabel lblTFdescripton;
 	private Border blackline;
+	private String validusername;
 	
 	public LoginPrompt(){
 		initialize();
@@ -89,19 +95,27 @@ public class LoginPrompt {
 		lblStatusText.setHorizontalAlignment(SwingConstants.CENTER);
 		lblStatusText.setText("Bitte gewünschten Usernamen eingeben");
 		frmLoginWindow.add(lblStatusText);
-		
-		
-		
-		
 	}
 	public void login(String username) {
-		if (true) {
-			logger.info("do login");
+		UserRepository messageRepository = new UserRepository(UserCouchDbConnection.get());
+		boolean exists = messageRepository.exists(new User(username));
+		if (exists) {
+			logger.info("username: "+ username + "is already in use");
+			lblStatusText.setForeground(Color.RED);
+			lblStatusText.setText("Username ist leider schon vergeben");		
 		}
 		else {
-			lblStatusText.setForeground(Color.RED);
-			lblStatusText.setText("Username ist leider schon vergeben");			
+			logger.info("username is free. proceed with login");
+			frmLoginWindow.setVisible(false);
+			frmLoginWindow.dispose();
+			validusername = username;
 		}
+	}
+	public String getValidUsername () {
+//		if (validusername.isEmpty() || validusername == null) {
+//			logger.warn("no username set");
+//		}
+		return validusername;
 	}
 	public static void main(String[] args) {
 	LoginPrompt lp = new LoginPrompt();
