@@ -56,7 +56,7 @@ public class ChatWindow {
 	 * 
 	 * @throws Exception something crashed
 	 */
-	public ChatWindow(final String username, final ServerManager serverManager) throws Exception {
+	public ChatWindow(final String username, final ServerManager serverManager) {
 		logger.info("Creating and initializing the main window for user {}", username);
 		this.serverManager = serverManager;
 		this.user = new User(username);
