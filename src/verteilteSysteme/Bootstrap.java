@@ -13,8 +13,25 @@ import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
 import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
 
 public class Bootstrap {
+	private static String username;
+	private static boolean exists;
 	private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
-
+	private static void checkUser(){
+		UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
+		// User configuration.
+				String username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
+				
+				if (username == null) {
+					//handle the Cancel Button
+					System.exit(0);
+				}
+				while(username.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Der eingegebene Nickname darf nicht leer sein");
+					username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
+				}
+		 
+				exists = userRepository.exists(new User(username));
+	}
 	public static void main(String[] args) {
 		// Configure the database connection.
 		final String host = "http://127.0.0.1:5984/";
@@ -22,15 +39,12 @@ public class Bootstrap {
 		UserCouchDbConnection.setConnectionDetails(host, "chatvs_users");
 		UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
 		
+		checkUser();
 		
-		// User configuration.
-		// User configuration.
-		String username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
-		boolean exists = userRepository.exists(new User(username));
 		while (exists) {
 			JOptionPane.showMessageDialog(null, "Der gewünschte Nickname "+username + " wird leider bereits verwendet");
 			username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
-			exists = userRepository.exists(new User(username));
+			checkUser();
 		}		
 		
 		// Create the GUI window and start listening for messages.
