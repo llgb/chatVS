@@ -28,7 +28,8 @@ public class Bootstrap {
 		while (exists) {
 			JOptionPane.showMessageDialog(null, "Der gewünschte Nickname "+username + " wird leider bereits verwendet");
 			username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
-		}
+			exists = messageRepository.exists(new User(username));
+		}		
 		
 		// Create the GUI window and start listening for messages.
 		try {
