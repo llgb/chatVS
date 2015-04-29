@@ -58,7 +58,7 @@ public class Message extends CouchDbDocument {
 					.append(this.created.toString())
 					.append(" ")
 					.append(this.owner)
-					.append(" ")
+					.append(":	 ")
 					.append(this.content)
 					.toString();
 	}
