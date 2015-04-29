@@ -3,7 +3,6 @@ package verteilteSysteme;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,39 +12,19 @@ import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
 import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
 
 public class Bootstrap {
-	private static String username;
-	private static boolean exists;
 	private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
-	private static void checkUser(){
-		UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
-		// User configuration.
-				username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
-				
-				if (username == null) {
-					//handle the Cancel Button
-					System.exit(0);
-				}
-				while(username.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Der eingegebene Nickname darf nicht leer sein");
-					username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
-				}
-		 
-				exists = userRepository.exists(new User(username));
-	}
+	
 	public static void main(String[] args) {
 		// Configure the database connection.
 		final String host = "http://127.0.0.1:5984/";
 		MessageCouchDbConnection.setConnectionDetails(host, "chatvs_messages");
 		UserCouchDbConnection.setConnectionDetails(host, "chatvs_users");
-		UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
 		
-		checkUser();
-		
-		while (exists) {
-			JOptionPane.showMessageDialog(null, "Der gewünschte Nickname "+username + " wird leider bereits verwendet");
-			username = JOptionPane.showInputDialog(null,"Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
-			checkUser();
-		}		
+		final String username = getUsernameAndCheckIfReserved();
+		if (username == null) {
+			// Cancel button. -> Exit.
+			return;
+		}
 		
 		// Create the GUI window and start listening for messages.
 		try {
@@ -64,8 +43,28 @@ public class Bootstrap {
 		}
 		
 	}
-	public static void setUsername(String username) {
-		Bootstrap.username = username;
-	}
 	
+	private static String getUsernameAndCheckIfReserved() {
+		final UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
+				
+		do {
+			String username = JOptionPane.showInputDialog(null, "Geben Sie Ihren Nicknamen ein", "Nicknamen auswählen", JOptionPane.PLAIN_MESSAGE);
+			
+			if (username == null) {
+				// Cancel button.
+				return null;
+			}
+			
+			if (username.isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Der eingegebene Nickname darf nicht leer sein");
+			} else {
+				// Check if the username is reserved.
+				if (userRepository.exists(new User(username))) {
+					JOptionPane.showMessageDialog(null, "Der gewünschte Nickname " + username + " wird leider bereits verwendet.");
+				} else {
+					return username;
+				}
+			}
+		} while (true);
+	}
 }
