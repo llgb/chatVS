@@ -37,7 +37,7 @@ public final class UserCouchDbConnection {
 		UserCouchDbConnection.url    = url;
 		UserCouchDbConnection.dbName = dbName;
 		
-		instantiateConnector();
+		UserCouchDbConnection.instantiateConnector();
 	}
 	
 	public static String getHost() {

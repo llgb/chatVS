@@ -37,7 +37,7 @@ public final class MessageCouchDbConnection {
 		MessageCouchDbConnection.url    = url;
 		MessageCouchDbConnection.dbName = dbName;
 		
-		instantiateConnector();
+		MessageCouchDbConnection.instantiateConnector();
 	}
 	
 	public static String getHost() {

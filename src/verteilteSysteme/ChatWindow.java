@@ -171,6 +171,10 @@ public class ChatWindow {
 		final UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
 		userRepository.remove(user);
 	}
+	
+	public JFrame getWindowComponent() {
+		return this.frmChatsystemTinfb;
+	}
 
 	/**
 	 * Initialize the contents of the frame.

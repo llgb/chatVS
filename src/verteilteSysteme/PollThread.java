@@ -3,6 +3,8 @@ package verteilteSysteme;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +79,11 @@ public class PollThread implements Runnable {
 				// is lost. Then switch to the next server host.
 				// The shitty ektorp framework won't allow us to do this in a cleaner way.
 				logger.warn("Lost the connection to database host {}.", this.serverManager.getActiveHost());
-				this.tryNextHost();
+				//this.tryNextHost();
+				JOptionPane.showMessageDialog(this.window.getWindowComponent(), "Verbindung zum Server " + this.serverManager.getActiveHost() + " abgebrochen.");
+				this.serverManager.changeActiveHost();
+				this.serverManager.writeHostListToDisk();
+				System.exit(1);
 			}
 		}
     }
