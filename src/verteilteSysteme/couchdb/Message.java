@@ -1,8 +1,13 @@
 package verteilteSysteme.couchdb;
 
+
+import java.util.Locale;
+import java.util.TimeZone;
+
 import org.ektorp.support.CouchDbDocument;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  * Represents a chat message.
@@ -55,7 +60,7 @@ public class Message extends CouchDbDocument {
 	@Override
 	public String toString() {
 		return new StringBuilder()
-					.append(this.created.toString())
+					.append(this.created.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("Europe/Berlin") )).toString("MM/dd/yyyy - hh:mm:ss", new Locale("de","DE")))
 					.append(" ")
 					.append(this.owner)
 					.append(":	 ")
