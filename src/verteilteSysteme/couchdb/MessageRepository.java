@@ -1,6 +1,7 @@
 package verteilteSysteme.couchdb;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.ektorp.CouchDbConnector;
@@ -33,10 +34,12 @@ public class MessageRepository extends CouchDbRepositorySupport<Message> {
 		int total = this.getNrOfMessages();
 		List<Message> messages = new ArrayList<Message>(n);
 		List<Message> allMessages = this.getAll();
-		
+			
+		// Sort the messages by date of creation
+		allMessages.sort(new MessageComparator());
 		for (int i = total - n; i < total; i++) {
 			messages.add(allMessages.get(i));
-		}
+		}		
 		
 		return messages;
 	}
