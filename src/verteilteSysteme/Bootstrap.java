@@ -1,5 +1,7 @@
 package verteilteSysteme;
 
+import java.io.File;
+
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -21,6 +23,17 @@ public class Bootstrap {
 		final ServerManager serverManager = new ServerManager("serverhosts.conf");
 		MessageCouchDbConnection.setConnectionDetails(serverManager.getActiveHost(), "chatvs_messages");
 		UserCouchDbConnection.setConnectionDetails(serverManager.getActiveHost(), "chatvs_users");
+		
+		// Delete all users if the connection aborted unexpectedly the last time.
+		File file = new File("con_lost.txt");
+		if (file.exists()) {
+			UserRepository userRepository = new UserRepository(UserCouchDbConnection.get());
+			for (User user : userRepository.getAll()) {
+				userRepository.remove(user);
+			}
+			
+			file.delete();
+		}
 		
 		final String username = getUsernameAndCheckIfReserved();
 		if (username == null) {

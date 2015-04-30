@@ -1,5 +1,7 @@
 package verteilteSysteme;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +85,12 @@ public class PollThread implements Runnable {
 				JOptionPane.showMessageDialog(this.window.getWindowComponent(), "Verbindung zum Server " + this.serverManager.getActiveHost() + " abgebrochen.");
 				this.serverManager.changeActiveHost();
 				this.serverManager.writeHostListToDisk();
+				File file = new File("con_lost.txt");
+				try {
+					file.createNewFile();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				System.exit(1);
 			}
 		}
