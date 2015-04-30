@@ -253,4 +253,10 @@ public class ChatWindow {
 			}
 		});
 	}
+	
+	private void tryNextHost() {
+		final String nextHost = this.serverManager.changeActiveHost();
+		MessageCouchDbConnection.setConnectionDetails(nextHost, "chatvs_messages");
+		UserCouchDbConnection.setConnectionDetails(nextHost, "chatvs_users");
+	}
 }

@@ -37,7 +37,7 @@ public class Bootstrap {
 			final ChatWindow window = new ChatWindow(username, serverManager);
 			logger.info("Window created.");
 			
-			final Thread pollthread = new Thread(new PollThread(window));
+			final Thread pollthread = new Thread(new PollThread(window, serverManager));
 			pollthread.start();
 			logger.info("Started listening for new messages.");
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {

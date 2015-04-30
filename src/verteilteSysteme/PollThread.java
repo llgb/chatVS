@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import verteilteSysteme.couchdb.Message;
 import verteilteSysteme.couchdb.MessageRepository;
+import verteilteSysteme.couchdb.ServerManager;
 import verteilteSysteme.couchdb.User;
 import verteilteSysteme.couchdb.UserRepository;
 import verteilteSysteme.couchdb.connection.MessageCouchDbConnection;
@@ -19,6 +20,7 @@ import verteilteSysteme.couchdb.connection.UserCouchDbConnection;
  */
 public class PollThread implements Runnable {
 	private final ChatWindow window;
+	private final ServerManager serverManager;
 	
 	private static final Logger logger = LoggerFactory.getLogger(PollThread.class);
 	
@@ -27,8 +29,9 @@ public class PollThread implements Runnable {
 	 * 
 	 * @param window the corresponding chat window to be updated with new messages
 	 */
-	public PollThread(final ChatWindow window) {
+	public PollThread(final ChatWindow window, final ServerManager serverManager) {
 		super();
+		this.serverManager = serverManager;
 		this.window = window;
 	}
 
@@ -42,12 +45,10 @@ public class PollThread implements Runnable {
 		final MessageRepository messageRepository = new MessageRepository(MessageCouchDbConnection.get());
 		final UserRepository userRepository       = new UserRepository(UserCouchDbConnection.get());
 		
-        try {
-        	while (true) {
-        		int currentInDBMessages = messageRepository.getNrOfMessages();                		
+		while (true) {
+	        try {
+	    		int currentInDBMessages = messageRepository.getNrOfMessages();                		
 	    		int messageDifference = currentInDBMessages - numberOfCachedMessages;
-	    		logger.info("Nachrichtenanzahl beträgt: {}", currentInDBMessages);
-	    		logger.info("Nachrichtendifferenz beträgt: {}", messageDifference);
 	    		
 	    		if (messageDifference > 0 ) {
 	    			newMessages            = messageRepository.getRecentMessages(messageDifference);
@@ -59,8 +60,6 @@ public class PollThread implements Runnable {
 	    		//Check for new Users
 	    		int currentInDBUsers = userRepository.getNrOfUsers();	                		
 	    		int userDifference   = currentInDBUsers - numberOfCachedUsers;
-	    		logger.info("Useranzahl beträgt: {}", currentInDBUsers);
-	    		logger.info("userdifferenz beträgt: {}", userDifference);
 	    		
 	    		if (userDifference != 0 ) {
 	    			newUsers            = userRepository.getAll();
@@ -69,12 +68,22 @@ public class PollThread implements Runnable {
 	    			newMessages.clear();
 	    		}
 	    		
-	    		logger.info("Thread going to sleep ...");
 	    		Thread.sleep(500);	
-        	}
-		} catch (InterruptedException e) {
-			logger.error("Thread interrupted.");
-			e.printStackTrace();
+			} catch (InterruptedException e) {
+				logger.error("Thread interrupted.");
+				e.printStackTrace();
+			} catch(Exception e) {
+				// Catch anything else, this happens most probably when the network connection
+				// is lost. Then switch to the next server host.
+				// The shitty ektorp framework won't allow us to do this in a cleaner way.
+				this.tryNextHost();
+			}
 		}
     }
+	
+	private void tryNextHost() {
+		final String nextHost = this.serverManager.changeActiveHost();
+		MessageCouchDbConnection.setConnectionDetails(nextHost, "chatvs_messages");
+		UserCouchDbConnection.setConnectionDetails(nextHost, "chatvs_users");
+	}
 }
