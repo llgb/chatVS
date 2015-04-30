@@ -127,7 +127,7 @@ public class ServerManager {
 			int loopCounter        = 0;
 			int serverIndexCounter = this.activeHostIndex;
 			while (loopCounter < this.getNrOfHosts()) {
-				writer.append(this.hosts.get(serverIndexCounter));
+				writer.append(this.hosts.get(serverIndexCounter)).append(System.lineSeparator());
 				
 				if (serverIndexCounter < this.getNrOfHosts() - 1) {
 					serverIndexCounter++;
