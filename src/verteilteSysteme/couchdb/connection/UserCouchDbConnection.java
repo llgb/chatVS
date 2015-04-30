@@ -27,12 +27,7 @@ public final class UserCouchDbConnection {
 	
 	public static synchronized CouchDbConnector get() {
 		if (UserCouchDbConnection.db == null) {
-			logger.info("Opening connection to couchdb ...");
-			
-			final HttpClient client          = buildHttpClientQuietly();
-			final CouchDbInstance dbInstance = new StdCouchDbInstance(client);
-			UserCouchDbConnection.db             = new StdCouchDbConnector(UserCouchDbConnection.dbName, dbInstance);
-			UserCouchDbConnection.db.createDatabaseIfNotExists();
+			instantiateConnector();
 		}
 		
 		return UserCouchDbConnection.db;
@@ -41,10 +36,20 @@ public final class UserCouchDbConnection {
 	public static synchronized void setConnectionDetails(final String url, final String dbName) {
 		UserCouchDbConnection.url    = url;
 		UserCouchDbConnection.dbName = dbName;
+		
+		instantiateConnector();
 	}
 	
 	public static String getHost() {
 		return UserCouchDbConnection.url;
+	}
+	
+	protected static void instantiateConnector() {
+		logger.info("Opening connection to {}", UserCouchDbConnection.db);
+		final HttpClient client          = buildHttpClientQuietly();
+		final CouchDbInstance dbInstance = new StdCouchDbInstance(client);
+		UserCouchDbConnection.db      = new StdCouchDbConnector(UserCouchDbConnection.dbName, dbInstance);
+		UserCouchDbConnection.db.createDatabaseIfNotExists();
 	}
 	
 	protected static HttpClient buildHttpClientQuietly() {

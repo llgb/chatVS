@@ -76,6 +76,7 @@ public class PollThread implements Runnable {
 				// Catch anything else, this happens most probably when the network connection
 				// is lost. Then switch to the next server host.
 				// The shitty ektorp framework won't allow us to do this in a cleaner way.
+				logger.warn("Lost the connection to database host {}.", this.serverManager.getActiveHost());
 				this.tryNextHost();
 			}
 		}
