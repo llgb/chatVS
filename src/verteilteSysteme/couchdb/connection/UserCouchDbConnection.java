@@ -45,7 +45,7 @@ public final class UserCouchDbConnection {
 	}
 	
 	protected static void instantiateConnector() {
-		logger.info("Opening connection to {}", UserCouchDbConnection.db);
+		logger.info("Opening connection to {}", UserCouchDbConnection.dbName);
 		final HttpClient client          = buildHttpClientQuietly();
 		final CouchDbInstance dbInstance = new StdCouchDbInstance(client);
 		UserCouchDbConnection.db      = new StdCouchDbConnector(UserCouchDbConnection.dbName, dbInstance);
