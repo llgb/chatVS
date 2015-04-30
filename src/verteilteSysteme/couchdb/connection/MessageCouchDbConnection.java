@@ -17,13 +17,13 @@ import org.slf4j.LoggerFactory;
 public final class MessageCouchDbConnection {
 	private static CouchDbConnector db = null;
 	
-	private static String username     = System.getenv("chatvs_user");
-	private static String password     = System.getenv("chatvs_pw");
+	private static String username      = System.getenv("chatvs_user");
+	private static String password      = System.getenv("chatvs_pw");
 	
-	private static final Logger logger = LoggerFactory.getLogger(MessageCouchDbConnection.class);
+	private static final Logger logger  = LoggerFactory.getLogger(MessageCouchDbConnection.class);
 	
-	public static String url           = "http://127.0.0.1:5984/";	// default
-	public static String dbName        = "chatvs";
+	private static String url           = "http://127.0.0.1:5984/";	// default
+	private static String dbName        = "chatvs";
 	
 	public static synchronized CouchDbConnector get() {
 		if (MessageCouchDbConnection.db == null) {
