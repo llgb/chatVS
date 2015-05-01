@@ -60,7 +60,7 @@ public class Message extends CouchDbDocument {
 	@Override
 	public String toString() {
 		return new StringBuilder()
-					.append(this.created.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("Europe/Berlin") )).toString("MM/dd/yyyy - hh:mm:ss", new Locale("de","DE")))
+					.append(this.created.toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("Europe/Berlin") )).toString("dd/MM/yyyy - HH:mm:ss", new Locale("de","DE")))
 					.append(" ")
 					.append(this.owner)
 					.append(":	 ")
